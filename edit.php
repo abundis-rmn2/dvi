@@ -78,7 +78,7 @@ echo("deleting");
             ?>
          </div>
          <?
-            if( isset($_GET['editor']) && $_GET['editor'] == 'abundis'  ) { ?>
+            if( isset($_GET['editor']) && $_GET['editor'] == 'fauxSecurityWord'  ) { ?>
 
             <a target="_blank" href="?id=<?php echo $id?>&delete_json=<?php echo $MUID?>&editor=<?php echo$_GET['editor'] ?>" class="btn btn-primary btn-lg active btn-danger" role="button" aria-pressed="true">Delete JSON network </a>
               <br>
