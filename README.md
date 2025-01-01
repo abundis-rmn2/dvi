@@ -159,10 +159,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-## Acknowledgements
-
-Special thanks to `abundis-rmn2` for developing and maintaining this project.
-
----
-
 Feel free to suggest edits or report issues in the [Issues](https://github.com/abundis-rmn2/dvi/issues) section!
