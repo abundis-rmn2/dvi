@@ -967,7 +967,7 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
 
         {error && <Alert variant="danger">{error}</Alert>}
 
-        {/* 3. Sigma Canvas Container & Floating HUD Overlays */}
+        {/* 3. Sigma Canvas Container & Floating Overlays/Modals (exact deprecated structure) */}
         <div
           ref={containerRef}
           style={{
@@ -978,89 +978,187 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
             borderRadius: '8px',
             boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
             position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          {/* Floating Graph Stats Overlay (HUD - Top Left) */}
-          {stats && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '12px',
-                left: '12px',
-                zIndex: 10,
-                backgroundColor: 'rgba(255, 255, 255, 0.94)',
-                backdropFilter: 'blur(6px)',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                border: '1px solid #ced4da',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                fontSize: '0.78rem',
-                pointerEvents: 'none',
-              }}
-            >
-              <div className="fw-bold border-bottom pb-1 mb-1 text-dark">Graph Stats (HUD)</div>
-              <div>Total Nodes: <strong>{stats.order}</strong> | Edges: <strong>{stats.size}</strong></div>
-              <div>Nodes After Drop: <strong>{stats.afterOrder}</strong> | Edges: <strong>{stats.afterSize}</strong></div>
-              <div>Density: <strong>{stats.density}</strong> | Weighted Size: <strong>{stats.weightedSize}</strong></div>
-            </div>
-          )}
-
-          {/* Floating HoverBox Tooltip Overlay (Top Right) */}
-          {hoveredNodeInfo && (
-            <div
-              style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                zIndex: 10,
-                backgroundColor: 'rgba(33, 37, 41, 0.94)',
-                color: '#ffffff',
-                backdropFilter: 'blur(6px)',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-                fontSize: '0.82rem',
-                pointerEvents: 'none',
-                maxWidth: '300px',
-              }}
-            >
-              <div className="fw-bold text-warning">{hoveredNodeInfo.label}</div>
-              <div className="my-1">
-                Type: <Badge bg="info" className="text-white">{hoveredNodeInfo.nodetype}</Badge>
+          {/* LEFT FLOATING OVERLAY: Click History & Graph Stats Modal (.hover.stats) */}
+          <div
+            style={{
+              position: 'absolute',
+              left: '12px',
+              top: '12px',
+              zIndex: 9999,
+              width: '320px',
+              maxHeight: '720px',
+              overflowY: 'auto',
+              backgroundColor: 'rgba(255, 255, 255, 0.94)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid #ced4da',
+              borderRadius: '8px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+              padding: '12px',
+              fontSize: '0.82rem',
+            }}
+          >
+            {/* Graph Stats Section */}
+            {stats && (
+              <div className="mb-3 border-bottom pb-2">
+                <h6 className="fw-bold text-dark mb-1 fs-7">Graph Stats</h6>
+                <ul className="list-unstyled mb-0 small">
+                  <li>Total nodes: <strong>{stats.order}</strong></li>
+                  <li>Total edges: <strong>{stats.size}</strong></li>
+                  <li>Dropped nodes: <strong>{stats.dropped}</strong></li>
+                  <li>Nodes after drop: <strong>{stats.afterOrder}</strong></li>
+                  <li>Edges after drop: <strong>{stats.afterSize}</strong></li>
+                  <li>Density: <strong>{stats.density}</strong></li>
+                  <li>Simple size: <strong>{stats.simpleSize}</strong></li>
+                  <li>Weighted size: <strong>{stats.weightedSize}</strong></li>
+                </ul>
               </div>
-              <div>Neighbors Count: <strong>{hoveredNodeInfo.degree}</strong></div>
+            )}
+
+            {/* Click History Section */}
+            <div className="mb-2">
+              <div className="d-flex justify-content-between align-items-center mb-1">
+                <h6 className="fw-bold text-dark mb-0 fs-7">
+                  Click History {nodeHistory.length > 0 && `(${nodeHistory.length})`}
+                </h6>
+                {nodeHistory.length > 0 && (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="p-0 text-danger text-decoration-none small"
+                    onClick={() => setNodeHistory([])}
+                  >
+                    Delete
+                  </Button>
+                )}
+              </div>
+              {nodeHistory.length === 0 ? (
+                <small className="text-muted italic">Click any node on graph...</small>
+              ) : (
+                <ul className="list-group list-group-flush small" style={{ maxHeight: '180px', overflowY: 'auto' }}>
+                  {nodeHistory.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="list-group-item list-group-item-action py-1 px-2 d-flex justify-content-between align-items-center"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleSelectNodeFromTable(item.node)}
+                    >
+                      <span className="fw-semibold text-truncate me-1">{item.label}</span>
+                      <Badge bg="secondary" style={{ fontSize: '0.65rem' }}>{item.nodetype}</Badge>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Hover Tooltip Info if hovering over node */}
+            {hoveredNodeInfo && (
+              <div className="mt-2 p-2 bg-dark text-white rounded small">
+                <div className="fw-bold text-warning">{hoveredNodeInfo.label}</div>
+                <div>Type: <Badge bg="info" className="text-white">{hoveredNodeInfo.nodetype}</Badge></div>
+                <div>Neighbors: <strong>{hoveredNodeInfo.degree}</strong></div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT FLOATING OVERLAY MODAL: HoverBox / ML Post Inspection Card (.hoverBox.hashtag) */}
+          {selectedNodeData && (
+            <div
+              style={{
+                position: 'absolute',
+                right: '0',
+                top: '0',
+                bottom: '0',
+                zIndex: 99999,
+                width: '420px',
+                backgroundColor: 'rgba(255, 255, 255, 0.97)',
+                backdropFilter: 'blur(10px)',
+                borderLeft: '2px solid #0d6efd',
+                boxShadow: '-4px 0 20px rgba(0,0,0,0.15)',
+                padding: '16px',
+                overflowY: 'auto',
+              }}
+            >
+              <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h6 className="fw-bold text-primary mb-0">
+                  Node Inspection: {selectedNodeData.label || selectedNodeData.node}
+                </h6>
+                <Button variant="outline-secondary" size="sm" onClick={() => setSelectedNodeData(null)}>
+                  ✕ Close
+                </Button>
+              </div>
+
+              {selectedNodeData.hashtag_info && (
+                <div className="mb-3 p-2 bg-light rounded border">
+                  <h5 className="fw-bold text-primary mb-1">
+                    Hashtag:{' '}
+                    <a
+                      href={`https://www.instagram.com/explore/tags/${selectedNodeData.hashtag_info.node}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      #{selectedNodeData.hashtag_info.node}
+                    </a>
+                  </h5>
+                  <h6>Amount: <b>{selectedNodeData.hashtag_info.no_publications}</b></h6>
+                  <small className="text-muted">Mined at: <b>{selectedNodeData.hashtag_info.mined_at}</b></small>
+                </div>
+              )}
+
+              {selectedNodeData.user_info && (
+                <div className="mb-3 p-2 bg-light rounded border">
+                  <h5 className="fw-bold text-success mb-1">User: @{selectedNodeData.user_info.username}</h5>
+                  <p className="mb-1 small text-muted">
+                    Followers: {selectedNodeData.user_info.follower_count || 'N/A'} | Following:{' '}
+                    {selectedNodeData.user_info.following_count || 'N/A'}
+                  </p>
+                </div>
+              )}
+
+              {selectedNodeData.post && Object.keys(selectedNodeData.post).length > 0 && (
+                <div>
+                  <h5 className="fw-bold text-dark border-bottom pb-2 fs-6">Image from ML inference (if available)</h5>
+                  {Object.entries(selectedNodeData.post).map(([key, item]: [string, any]) => (
+                    <div key={key} className="border-bottom py-2">
+                      {item.m_id && (
+                        <div className="mb-2 text-center">
+                          <img
+                            src={`http://data.abundis.com.mx/media//exported_images/${muid}/${item.m_id}_exported.jpg`}
+                            alt={item.m_id}
+                            style={{ width: '85%', borderRadius: '6px', border: '1px solid #dee2e6' }}
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                          <img
+                            src={`http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`}
+                            alt={item.m_id}
+                            style={{ width: '85%', borderRadius: '6px', border: '1px solid #dee2e6' }}
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      <ul className="list-unstyled small mb-0">
+                        <li><strong>User:</strong> {item.user_id}</li>
+                        <li><strong>Posted @:</strong> {item.taken_at}</li>
+                        <li><strong>Comments:</strong> {item.comment_count}</li>
+                        <li><strong>Likes:</strong> {item.like_count}</li>
+                        <li><strong>Hashtags:</strong> {item.hashtags_used}</li>
+                        <li className="mt-1 text-muted"><em>{item.caption_text}</em></li>
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* 4. Click History Panel */}
-        {nodeHistory.length > 0 && (
-          <Card className="mt-3 border">
-            <Card.Header className="bg-light d-flex justify-content-between align-items-center py-2">
-              <span className="fw-bold">Node Click History ({nodeHistory.length})</span>
-              <Button variant="outline-danger" size="sm" onClick={() => setNodeHistory([])}>
-                Clear History
-              </Button>
-            </Card.Header>
-            <Card.Body className="py-2 px-3">
-              <div className="d-flex flex-wrap gap-2">
-                {nodeHistory.map((item, idx) => (
-                  <Badge
-                    key={idx}
-                    bg="secondary"
-                    className="p-2"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => handleSelectNodeFromTable(item.node)}
-                  >
-                    {item.label} ({item.nodetype})
-                  </Badge>
-                ))}
-              </div>
-            </Card.Body>
-          </Card>
-        )}
-
-        {/* Results Output Panels */}
+        {/* 4. Results Output Panels */}
         {results1 && (
           <Alert variant="info" className="mt-3">
             <h6 className="fw-bold mb-2">Node Types Breakdown</h6>
