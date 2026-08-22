@@ -215,3 +215,54 @@ En la vista PHP original (`src/_deprecated/php/hashtags_ai_data_live.php`), los 
 ### Justificación del Rediseño Manteniendo la Visibilidad Permanente
 En la aplicación React ([`AIGraphViewer.tsx`](file:///home/abundis/Documents/freight-graffiti/src/components/AIGraphViewer.tsx)), se mantuvo la disponibilidad de **todos** estos campos y botones. Para evitar ocultar parámetros tras pestañas complejas, la interfaz muestra **permanentemente la barra de acciones e incluye el panel de parámetros colapsable directamente sobre el lienzo**, permitiendo al usuario acceder a cualquier ajuste sin perder de vista la simulación física WebGL.
 
+---
+
+## 10. Comportamiento Interactivo de Hover, Clic y Visualización de Publicaciones
+
+En la interfaz original, el grafo contaba con un panel flotante de inspección ubicado **directamente arriba/sobre el lienzo del grafo** (`.hoverBox.hashtag` dentro del contenedor `#sigma-logs`), que reaccionaba dinámicamente a los eventos del ratón:
+
+### 1. Comportamiento al Pasar el Cursor (*Hover / Mouse Enter*)
+- **Eventos**: `renderer.on('enterNode')` y `renderer.on('leaveNode')`.
+- **Información Desplegada**:
+  - Muestra una pequeña etiqueta tipo *Tooltip* o tarjeta resumen con el identificador del nodo (`label`), el tipo de nodo (`nodetype`) y su grado de conectividad (número de vecinos directos).
+  - Al salir del nodo (`leaveNode`), si no hay un nodo seleccionado explícitamente por clic, el tooltip de hover se oculta.
+
+### 2. Comportamiento al Hacer Clic (*Node Click Event*)
+- **Evento**: `renderer.on('clickNode', ({ node }) => ...)`
+- **Flujo de Ejecución**:
+  1. **Reducción Visual (Focus & Dimming)**:
+     - Activa el reductor de nodos (`nodeReducer`).
+     - El nodo seleccionado se resalta con color brillante.
+     - Sus vecinos directos (1-hop - `selectedNeighbors`) permanecen visibles.
+     - El resto de nodos del grafo se desdibujan/atenúan (`color: #f6f6f6`, `hidden: true`).
+  2. **Historial de Clics**:
+     - Agrega el nodo al listado de historial superior (`.nodeHistory`).
+  3. **Petición AJAX a Backend (`json_data.php` / `/api/json-data`)**:
+     - Envía los parámetros `{ node: nodeLabel, nodeType: nodetype, MUID: taskMUID }`.
+  4. **Despliegue del Panel Flotante de Publicación e Inferencias (Caja Superior sobre el Grafo)**:
+     - La caja flotante `.hoverBox.hashtag` (situada sobre la esquina superior del lienzo) se limpia y se hace visible (`jQuery(".hoverBox").show("slow")`).
+     - **Si el nodo es un Hashtag (`hashtag` / `ai_text_hashtag`)**:
+       - Muestra el nombre del Hashtag como enlace directo a Instagram (`https://www.instagram.com/explore/tags/{hashtag}`).
+       - Muestra la cantidad total de publicaciones minadas (`no_publications`) y la fecha de minado (`mined_at`).
+       - Despliega una galería desplazable con las publicaciones asociadas.
+     - **Si el nodo es una Publicación (`post`) o Hashtag**:
+       - Encabezado: **`"Image from ML inference (if available)"`**.
+       - Carga la imagen procesada por los modelos de Machine Learning desde la URL remota:
+         `http://data.abundis.com.mx/media//exported_images/{MUID}/{m_id}_exported.jpg`
+         *(con fallback a `.webp`)*.
+       - Despliega la lista detallada de metadatos de la publicación (`<ul>`):
+         - `User`: Usuario autor de la publicación (`user_id`).
+         - `Posted @`: Fecha y hora exacta de publicación (`taken_at`).
+         - `Comments`: Conteo total de comentarios (`comment_count`).
+         - `Likes`: Conteo total de "me gusta" (`like_count`).
+         - `Hashtags`: Lista de hashtags utilizados en el post (`hashtags_used`).
+         - `Caption`: Texto descriptivo del pie de foto con normalización de caracteres (`caption_text`).
+
+---
+
+### 3. Réplica en la Nueva Arquitectura Next.js 14
+En el nuevo componente React ([`AIGraphViewer.tsx`](file:///home/abundis/Documents/freight-graffiti/src/components/AIGraphViewer.tsx)), este flujo fue completamente replicado y mejorado:
+- Al hacer clic en cualquier nodo del lienzo WebGL, se actualiza el estado React `selectedNodeData`.
+- Se despliega una tarjeta de detalle interactiva **justo debajo o flotante sobre el mapa**, cargando la imagen remota de inferencia ML (`http://data.abundis.com.mx/media/...`), los contadores de likes/comentarios, el autor y la leyenda de la publicación.
+
+
