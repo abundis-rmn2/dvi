@@ -231,7 +231,7 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
         const initialSize = graph.size;
         let dropCont = 0;
 
-        // Pruning logic matching PHP setNodeSize & cleanEntities
+        // Pruning logic matching PHP setNodeSize & cleanEntities & networkfilter[]
         graph.forEachNode((node: string) => {
           const nodetype = graph.getNodeAttribute(node, 'nodetype');
 
@@ -252,6 +252,24 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
               dropCont++;
               return;
             }
+          }
+
+          // networkfilter[] — drop nodes whose category filter is unchecked
+          // standard → hashtag, user
+          if (!networkFilter.standard && (nodetype === 'hashtag' || nodetype === 'user')) {
+            if (graph.hasNode(node)) { graph.dropNode(node); dropCont++; return; }
+          }
+          // text_ai → hashtag_class, ai_text_word, ai_text_hashtag
+          if (!networkFilter.text_ai && (nodetype === 'hashtag_class' || nodetype === 'ai_text_word' || nodetype === 'ai_text_hashtag')) {
+            if (graph.hasNode(node)) { graph.dropNode(node); dropCont++; return; }
+          }
+          // image_ai → ai_custom_inference, ai_world_inference
+          if (!networkFilter.image_ai && (nodetype === 'ai_custom_inference' || nodetype === 'ai_world_inference')) {
+            if (graph.hasNode(node)) { graph.dropNode(node); dropCont++; return; }
+          }
+          // text_ai_entitites → entity_individual, entity_sub
+          if (!networkFilter.text_ai_entitites && (nodetype === 'entity_individual' || nodetype === 'entity_sub')) {
+            if (graph.hasNode(node)) { graph.dropNode(node); dropCont++; return; }
           }
 
           // Node size assignment
@@ -459,6 +477,7 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
     initialLayout,
     autoGravityScale,
     reducerDepth,
+    networkFilter,
   ]);
 
   // BUTTON 1: Start FA2 Layout
