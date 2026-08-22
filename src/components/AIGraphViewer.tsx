@@ -101,6 +101,7 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
 
   const [reducerDepth, setReducerDepth] = useState<'1hop' | '2hop'>('1hop');
   const [selectedNodeData, setSelectedNodeData] = useState<any | null>(null);
+  const [hoveredNodeInfo, setHoveredNodeInfo] = useState<{ node: string; nodetype: string; label: string; degree: number } | null>(null);
   const [nodeHistory, setNodeHistory] = useState<Array<{ node: string; nodetype: string; label: string }>>([]);
 
   const [activeLayout, setActiveLayout] = useState<boolean>(false);
@@ -383,6 +384,22 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
             state.selectedNeighborsNeighbors = undefined;
             setSelectedNodeData(null);
             renderer.refresh();
+          });
+
+          renderer.on('enterNode', ({ node }: { node: string }) => {
+            if (graph.hasNode(node)) {
+              const attr = graph.getNodeAttributes(node);
+              setHoveredNodeInfo({
+                node,
+                nodetype: attr.nodetype || 'node',
+                label: attr.label || node,
+                degree: graph.degree(node),
+              });
+            }
+          });
+
+          renderer.on('leaveNode', () => {
+            setHoveredNodeInfo(null);
           });
 
           renderer.setSetting('nodeReducer', (node: string, data: any) => {
@@ -950,7 +967,7 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
 
         {error && <Alert variant="danger">{error}</Alert>}
 
-        {/* 3. Sigma Canvas Container */}
+        {/* 3. Sigma Canvas Container & Floating HUD Overlays */}
         <div
           ref={containerRef}
           style={{
@@ -962,7 +979,59 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
             boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)',
             position: 'relative',
           }}
-        />
+        >
+          {/* Floating Graph Stats Overlay (HUD - Top Left) */}
+          {stats && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '12px',
+                left: '12px',
+                zIndex: 10,
+                backgroundColor: 'rgba(255, 255, 255, 0.94)',
+                backdropFilter: 'blur(6px)',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                border: '1px solid #ced4da',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                fontSize: '0.78rem',
+                pointerEvents: 'none',
+              }}
+            >
+              <div className="fw-bold border-bottom pb-1 mb-1 text-dark">Graph Stats (HUD)</div>
+              <div>Total Nodes: <strong>{stats.order}</strong> | Edges: <strong>{stats.size}</strong></div>
+              <div>Nodes After Drop: <strong>{stats.afterOrder}</strong> | Edges: <strong>{stats.afterSize}</strong></div>
+              <div>Density: <strong>{stats.density}</strong> | Weighted Size: <strong>{stats.weightedSize}</strong></div>
+            </div>
+          )}
+
+          {/* Floating HoverBox Tooltip Overlay (Top Right) */}
+          {hoveredNodeInfo && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                zIndex: 10,
+                backgroundColor: 'rgba(33, 37, 41, 0.94)',
+                color: '#ffffff',
+                backdropFilter: 'blur(6px)',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+                fontSize: '0.82rem',
+                pointerEvents: 'none',
+                maxWidth: '300px',
+              }}
+            >
+              <div className="fw-bold text-warning">{hoveredNodeInfo.label}</div>
+              <div className="my-1">
+                Type: <Badge bg="info" className="text-white">{hoveredNodeInfo.nodetype}</Badge>
+              </div>
+              <div>Neighbors Count: <strong>{hoveredNodeInfo.degree}</strong></div>
+            </div>
+          )}
+        </div>
 
         {/* 4. Click History Panel */}
         {nodeHistory.length > 0 && (
@@ -1114,7 +1183,7 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
 
               {selectedNodeData.post && Object.keys(selectedNodeData.post).length > 0 && (
                 <div>
-                  <h6 className="fw-bold border-bottom pb-2">Connected Media Posts</h6>
+                  <h5 className="fw-bold text-dark border-bottom pb-2">Image from ML inference (if available)</h5>
                   {Object.entries(selectedNodeData.post).map(([key, item]: [string, any]) => (
                     <div key={key} className="border-bottom py-2">
                       <p className="mb-1 fw-bold text-dark">
