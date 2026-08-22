@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id                   Int       @id @default(autoincrement())
+  MUID                 String    @db.VarChar(255)
+  seed_node            String?   @db.VarChar(255)
+  mining_depth         Int?
+  mining_type          String?   @db.VarChar(50)
+  hashtag_media_amount Int?
+  title                String?   @db.VarChar(255)
+  description          String?   @db.Text
+  created_at           DateTime? @default(now())
+
+  @@map("tasks")
+}
+
+model Queue {
+  id                   Int       @id @default(autoincrement())
+  MUID                 String    @db.VarChar(255)
+  seed_node            String?   @db.VarChar(255)
+  mining_depth         Int?
+  mining_type          String?   @db.VarChar(50)
+  hashtag_media_amount Int?
+  created_at           DateTime? @default(now())
+  bot_username         String?   @db.VarChar(255)
+  iteration_no         Int?
+  status               String?   @db.VarChar(50)
+  finished_at          DateTime?
+
+  @@map("queue")
+}
+
+model DataMedia {
+  id            Int       @id @default(autoincrement())
+  m_id          String?   @db.VarChar(255)
+  MUID          String    @db.VarChar(255)
+  caption_text  String?   @db.Text
+  media_type    String?   @db.VarChar(50)
+  like_count    Int?
+  comment_count Int?
+  taken_at      DateTime?
+
+  @@map("data_media")
+}
+
+model DataRecentHashtag {
+  id              Int       @id @default(autoincrement())
+  MUID            String    @db.VarChar(255)
+  hashtag         String?   @db.VarChar(255)
+  no_publications Int?
+  mined_at        DateTime?
+
+  @@map("data_recent_hashtags")
+}

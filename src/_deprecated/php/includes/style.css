@@ -1,0 +1,82 @@
+.hashtagmediaamount.form-group {
+    display: none;
+}
+
+.hoverBox.hashtag img{
+    width: 50%
+}
+
+
+.hoverBox {
+    position: absolute;
+    width: 40%;
+    background: rgba(255, 255, 255, 0.33);
+    height: 800px;
+    overflow-y: scroll;
+    display: none;
+    border: 2px solid #dbdbdb;
+    padding: 1rem;
+    border-radius: 1rem 0 0 1rem;
+    right: 0;
+    z-index: 99999999999;
+    pointer-events: all;
+}
+
+.hoverBox li {
+        font-size: 0.777rem;
+    }
+
+.hoverBox::-webkit-scrollbar, .hover::-webkit-scrollbar{
+  width: 10px;
+  height: 10px;
+}
+
+.hoverBox::-webkit-scrollbar-thumb, .hover::-webkit-scrollbar-thumb{
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hoverBox::-webkit-scrollbar-track, .hover::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hover.stats{
+    position: absolute;
+    width: 40%;
+    background: rgba(255, 255, 255, 0.33);
+    height: 276px;
+    overflow-y: scroll;
+    border: 2px solid #dbdbdb;
+    padding: 1rem;
+    border-radius: 0 1rem 1rem 0;
+    left: 0;
+    top: 1em;
+    z-index: 99999;
+}
+
+.hover.conf{
+    position: absolute;
+    width: 40%;
+    background: rgba(255, 255, 255, 0.33);
+    height: 276px;
+    overflow-y: scroll;
+    border: 2px solid #dbdbdb;
+    padding: 1rem;
+    border-radius: 0 1rem 1rem 0;
+    left: 0;
+    bottom: 1em;
+    z-index: 99999;
+    pointer-events: all;
+}
+
+#sisma-logs{
+    position: absolute;
+    z-index: 2;
+    width: 96%;
+    height: 800px;
+    pointer-events: none;
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #dee2e6;
+    max-width: 1px;
+}
