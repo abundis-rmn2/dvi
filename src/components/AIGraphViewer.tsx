@@ -819,10 +819,10 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
           </div>
         </div>
 
-        {/* 2. Graph Parameters & Filters Section (Always Visible / Collapsible) */}
+        {/* 2. Graph Parameters & Filters - EXACT ORIGINAL PHP FORM ORDER (Section 9 Report) */}
         <Card className="mb-3 border bg-light">
           <Card.Header className="bg-white fw-bold py-2 d-flex justify-content-between align-items-center">
-            <span>Graph Parameters & Filters</span>
+            <span>Graphology.js ForceAtlas Layout — Parameters &amp; Filters</span>
             <Button
               variant="link"
               size="sm"
@@ -834,124 +834,163 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
           </Card.Header>
           {showConfig && (
             <Card.Body className="p-3">
+              {/* ── 1. networkfilter[] ── (Original: Checkboxes Standard, Text_AI_Dict, Text_AI_OOV, Image_AI) */}
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold small">Network will include:</Form.Label>
+                <div className="d-flex flex-wrap gap-3">
+                  <Form.Check
+                    type="checkbox"
+                    id="networkfilter-standard"
+                    label="Standard"
+                    checked={networkFilter.standard}
+                    onChange={(e) => setNetworkFilter({ ...networkFilter, standard: e.target.checked })}
+                  />
+                  <Form.Check
+                    type="checkbox"
+                    id="networkfilter-text_ai"
+                    label="Text_AI_Dict"
+                    checked={networkFilter.text_ai}
+                    onChange={(e) => setNetworkFilter({ ...networkFilter, text_ai: e.target.checked })}
+                  />
+                  <Form.Check
+                    type="checkbox"
+                    id="networkfilter-text_ai_entities"
+                    label="Text_AI_OOV"
+                    checked={networkFilter.text_ai_entitites}
+                    onChange={(e) => setNetworkFilter({ ...networkFilter, text_ai_entitites: e.target.checked })}
+                  />
+                  <Form.Check
+                    type="checkbox"
+                    id="networkfilter-image_ai"
+                    label="Image_AI"
+                    checked={networkFilter.image_ai}
+                    onChange={(e) => setNetworkFilter({ ...networkFilter, image_ai: e.target.checked })}
+                  />
+                </div>
+                <Form.Text className="text-muted">
+                  Select the data used to feed the graph. Standard [hashtags, posts, users]. Text_AI: Hashtags classified by [Northamerica city list, Graffiti terms, Railroad terms]. Image_AI: Post classified by graffiti types [tag, wildstyle, 3D, monikers, bomba (throwup)]
+                </Form.Text>
+              </Form.Group>
+
+              <hr className="my-2" />
+
+              {/* ── 2. nodeMinDegree ── */}
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold small">Node Minimum Degree ({nodeMinDegree})</Form.Label>
+                <Form.Range min={0} max={30} value={nodeMinDegree} onChange={(e) => setNodeMinDegree(parseInt(e.target.value, 10))} />
+                <Form.Text className="text-muted">Minimum entrance degree of node, smaller will be deleted from graph. Default: 0</Form.Text>
+              </Form.Group>
+
+              {/* ── 3. cleanEntities ── */}
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold small d-block">Should we clean not related <b>text_ai_entities</b> to term <b>"graffiti"</b>, numbers only and non latin chars?</Form.Label>
+                <Form.Check inline type="radio" id="cleanEntities-true" label="true" checked={cleanEntities} onChange={() => setCleanEntities(true)} />
+                <Form.Check inline type="radio" id="cleanEntities-false" label="false" checked={!cleanEntities} onChange={() => setCleanEntities(false)} />
+              </Form.Group>
+
+              <hr className="my-2" />
+
               <Row>
                 <Col md={6}>
+                  {/* ── 4. gravity ── */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold small">Node Minimum Degree ({nodeMinDegree})</Form.Label>
-                    <Form.Range
-                      min={0}
-                      max={30}
-                      value={nodeMinDegree}
-                      onChange={(e) => setNodeMinDegree(parseInt(e.target.value, 10))}
-                    />
+                    <Form.Label className="fw-bold small">Gravity ({gravity})</Form.Label>
+                    <Form.Control type="number" size="sm" step="0.1" value={gravity} onChange={(e) => setGravity(parseFloat(e.target.value))} />
                   </Form.Group>
 
+                  {/* ── 5. adjustSizes ── */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold small d-block">Clean Non-Graffiti Entities / Latin Text</Form.Label>
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="cleanEntities-true"
-                      label="True (Clean)"
-                      checked={cleanEntities}
-                      onChange={() => setCleanEntities(true)}
-                    />
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="cleanEntities-false"
-                      label="False"
-                      checked={!cleanEntities}
-                      onChange={() => setCleanEntities(false)}
-                    />
+                    <Form.Label className="fw-bold small d-block">Should the node&apos;s sizes be taken into account?</Form.Label>
+                    <Form.Check inline type="radio" id="adjustSizes-true" label="true" checked={adjustSizes} onChange={() => setAdjustSizes(true)} />
+                    <Form.Check inline type="radio" id="adjustSizes-false" label="false" checked={!adjustSizes} onChange={() => setAdjustSizes(false)} />
                   </Form.Group>
 
+                  {/* ── 6. barnesHutOptimize ── */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold small d-block">Node Sizing Mode</Form.Label>
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="nodeFixedSize-true"
-                      label="Fixed Initial Sizes"
-                      checked={nodeFixedSize}
-                      onChange={() => setNodeFixedSize(true)}
-                    />
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="nodeFixedSize-false"
-                      label="Normalized Metrics (Likes/Followers)"
-                      checked={!nodeFixedSize}
-                      onChange={() => setNodeFixedSize(false)}
-                    />
+                    <Form.Label className="fw-bold small d-block">Use Barnes-Hut approximation O(n·log n)?</Form.Label>
+                    <Form.Check inline type="radio" id="barnesHut-true" label="true" checked={barnesHutOptimize} onChange={() => setBarnesHutOptimize(true)} />
+                    <Form.Check inline type="radio" id="barnesHut-false" label="false" checked={!barnesHutOptimize} onChange={() => setBarnesHutOptimize(false)} />
+                  </Form.Group>
+
+                  {/* ── 7. barnesHutTheta ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small">Barnes-Hut approximation theta ({barnesHutTheta})</Form.Label>
+                    <Form.Control type="number" size="sm" step="0.1" value={barnesHutTheta} onChange={(e) => setBarnesHutTheta(parseFloat(e.target.value))} />
+                  </Form.Group>
+
+                  {/* ── 8. outboundAttractionDistribution ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small d-block">outboundAttractionDistribution</Form.Label>
+                    <Form.Check inline type="radio" id="outbound-true" label="true" checked={outboundAttractionDistribution} onChange={() => setOutboundAttractionDistribution(true)} />
+                    <Form.Check inline type="radio" id="outbound-false" label="false" checked={!outboundAttractionDistribution} onChange={() => setOutboundAttractionDistribution(false)} />
                   </Form.Group>
                 </Col>
 
                 <Col md={6}>
+                  {/* ── 9. linLogMode ── */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold small d-block">Initial Seed Layout</Form.Label>
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="initialLayout-circlepack"
-                      label="Circle Pack"
-                      checked={initialLayout === 'circlepack'}
-                      onChange={() => setInitialLayout('circlepack')}
-                    />
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="initialLayout-random"
-                      label="Random"
-                      checked={initialLayout === 'random'}
-                      onChange={() => setInitialLayout('random')}
-                    />
+                    <Form.Label className="fw-bold small d-block">Use Noack&apos;s LinLog model?</Form.Label>
+                    <Form.Check inline type="radio" id="linLog-true" label="true" checked={linLogMode} onChange={() => setLinLogMode(true)} />
+                    <Form.Check inline type="radio" id="linLog-false" label="false" checked={!linLogMode} onChange={() => setLinLogMode(false)} />
                   </Form.Group>
 
+                  {/* ── 10. scalingRatio ── */}
                   <Form.Group className="mb-3">
-                    <Form.Label className="fw-bold small d-block">Neighborhood Visibility Reducer</Form.Label>
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="reducerDepth-1hop"
-                      label="1-Hop Neighbors"
-                      checked={reducerDepth === '1hop'}
-                      onChange={() => setReducerDepth('1hop')}
-                    />
-                    <Form.Check
-                      inline
-                      type="radio"
-                      id="reducerDepth-2hop"
-                      label="2-Hop Neighbors"
-                      checked={reducerDepth === '2hop'}
-                      onChange={() => setReducerDepth('2hop')}
-                    />
+                    <Form.Label className="fw-bold small">scalingRatio ({scalingRatio})</Form.Label>
+                    <Form.Control type="number" size="sm" step="0.1" value={scalingRatio} onChange={(e) => setScalingRatio(parseFloat(e.target.value))} />
                   </Form.Group>
 
-                  <Row>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold small">Gravity ({gravity})</Form.Label>
-                        <Form.Control
-                          type="number"
-                          size="sm"
-                          value={gravity}
-                          onChange={(e) => setGravity(parseFloat(e.target.value))}
-                        />
-                      </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold small">Iterations ({iterations})</Form.Label>
-                        <Form.Control
-                          type="number"
-                          size="sm"
-                          value={iterations}
-                          onChange={(e) => setIterations(parseInt(e.target.value, 10))}
-                        />
-                      </Form.Group>
-                    </Col>
-                  </Row>
+                  {/* ── 11. slowDown ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small">slowDown ({slowDown})</Form.Label>
+                    <Form.Control type="number" size="sm" step="0.1" value={slowDown} onChange={(e) => setSlowDown(parseFloat(e.target.value))} />
+                  </Form.Group>
+
+                  {/* ── 12. strongGravityMode ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small d-block">strongGravityMode</Form.Label>
+                    <Form.Check inline type="radio" id="strongGravity-true" label="true" checked={strongGravityMode} onChange={() => setStrongGravityMode(true)} />
+                    <Form.Check inline type="radio" id="strongGravity-false" label="false" checked={!strongGravityMode} onChange={() => setStrongGravityMode(false)} />
+                  </Form.Group>
+
+                  {/* ── 13. nodeFixedSize ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small d-block">nodeFixedSize</Form.Label>
+                    <Form.Check inline type="radio" id="nodeFixedSize-true" label="true" checked={nodeFixedSize} onChange={() => setNodeFixedSize(true)} />
+                    <Form.Check inline type="radio" id="nodeFixedSize-false" label="false" checked={!nodeFixedSize} onChange={() => setNodeFixedSize(false)} />
+                  </Form.Group>
+
+                  {/* ── 14. initialLayout ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small d-block">initialLayout</Form.Label>
+                    <Form.Check inline type="radio" id="initialLayout-random" label="random" checked={initialLayout === 'random'} onChange={() => setInitialLayout('random')} />
+                    <Form.Check inline type="radio" id="initialLayout-circlepack" label="circlepack" checked={initialLayout === 'circlepack'} onChange={() => setInitialLayout('circlepack')} />
+                  </Form.Group>
+
+                  {/* ── 15. autoGravityScale ── */}
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small d-block">autoGravityScale</Form.Label>
+                    <Form.Check inline type="radio" id="autoGravity-auto" label="auto" checked={autoGravityScale === 'auto'} onChange={() => setAutoGravityScale('auto')} />
+                    <Form.Check inline type="radio" id="autoGravity-manual" label="manual" checked={autoGravityScale === 'manual'} onChange={() => setAutoGravityScale('manual')} />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <hr className="my-2" />
+
+              {/* ── 16. nodeReducerDepth (from Section 2 Central) ── */}
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-bold small d-block">nodeReducerDepth <span className="text-danger">*</span></Form.Label>
+                <Form.Check inline type="radio" id="reducerDepth-1hop" label="selectedNeighbors (1-hop)" checked={reducerDepth === '1hop'} onChange={() => setReducerDepth('1hop')} />
+                <Form.Check inline type="radio" id="reducerDepth-2hop" label="selectedNeighborsNeighbors (2-hop)" checked={reducerDepth === '2hop'} onChange={() => setReducerDepth('2hop')} />
+              </Form.Group>
+
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-bold small">Iterations ({iterations})</Form.Label>
+                    <Form.Control type="number" size="sm" value={iterations} onChange={(e) => setIterations(parseInt(e.target.value, 10))} />
+                  </Form.Group>
                 </Col>
               </Row>
             </Card.Body>
