@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, isDbAvailable } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
 
@@ -46,6 +46,23 @@ export async function GET(request: Request) {
     const payload = await getCachedData(
       ['api_node_inspection', nodeType, node, muid],
       () => {
+        if (!isDbAvailable()) {
+          logger.log('API:json-data', `SQLite DB not available, returning static inspection fallback`);
+          if (nodeType === 'hashtag' || nodeType === 'ai_text_hashtag') {
+            return {
+              hashtag_info: { MUID: muid, node, no_publications: 'Static mode', mined_at: 'Static mode' },
+              post: {},
+            };
+          } else if (nodeType === 'user') {
+            return {
+              user_info: { username: node.startsWith('u_') ? node.substring(2) : node },
+              post: {},
+            };
+          } else {
+            return { post: {} };
+          }
+        }
+
         logger.log('API:json-data', `Executing SQLite node lookup`, { node, nodeType, muid });
         const db = getDb();
 
@@ -141,6 +158,10 @@ export async function GET(request: Request) {
     return NextResponse.json(payload);
   } catch (error) {
     logger.error('API:json-data', 'Error fetching node data from SQLite', error);
-    return NextResponse.json({ error: 'Failed to fetch node data' }, { status: 500 });
+    return NextResponse.json({
+      hashtag_info: { MUID: '', node: '', no_publications: 'Static mode', mined_at: 'Static mode' },
+      post: {},
+    });
   }
 }
+

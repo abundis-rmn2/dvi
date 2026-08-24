@@ -38,4 +38,5 @@ next-env.d.ts
 *.sql
 *.db
 *.tar
-
+MIGRATION-BACKEND.md
+eng-wp-cv.pdf

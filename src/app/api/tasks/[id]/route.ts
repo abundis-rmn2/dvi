@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, isDbAvailable, getStaticTasks } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
 
@@ -15,11 +15,17 @@ export async function GET(
     const task = await getCachedData(
       ['api_task_by_id', String(id)],
       () => {
-        logger.log('API:tasks:id:GET', `Fetching task ID ${id} from local SQLite`);
-        const db = getDb();
-        const res = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
-        db.close();
-        return res;
+        if (isDbAvailable()) {
+          logger.log('API:tasks:id:GET', `Fetching task ID ${id} from local SQLite`);
+          const db = getDb();
+          const res = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+          db.close();
+          return res;
+        }
+
+        logger.log('API:tasks:id:GET', `Fetching task ID ${id} from static JSON`);
+        const staticTasks = getStaticTasks();
+        return staticTasks.find((t: any) => t.id === id) || null;
       },
       ['tasks']
     );
@@ -30,7 +36,14 @@ export async function GET(
 
     return NextResponse.json(task);
   } catch (error) {
-    logger.error('API:tasks:id:GET', 'Error fetching task from local SQLite', error);
+    logger.error('API:tasks:id:GET', 'Error fetching task, trying static fallback', error);
+    try {
+      const id = parseInt(params.id, 10);
+      const staticTasks = getStaticTasks();
+      const task = staticTasks.find((t: any) => t.id === id);
+      if (task) return NextResponse.json(task);
+    } catch (e) {}
     return NextResponse.json({ error: 'Failed to fetch task' }, { status: 500 });
   }
 }
+

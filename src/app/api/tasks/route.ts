@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, isDbAvailable, getStaticTasks } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
 
@@ -20,26 +20,45 @@ export async function GET(request: Request) {
     const tasks = await getCachedData(
       ['api_tasks_list', sort, order],
       () => {
-        logger.log('API:tasks:GET', `Executing SQLite query for tasks sorted by ${sort} ${order}`);
-        const db = getDb();
-        const query = `
-          SELECT t.id, t.MUID, t.seed_node, t.mining_depth, t.mining_type, t.hashtag_media_amount, t.created_at,
-              (SELECT COUNT(*) FROM data_media WHERE MUID = t.MUID) as p_count,
-              (SELECT COUNT(*) FROM data_recent_hashtags WHERE MUID = t.MUID) as h_count,
-              (SELECT COUNT(*) FROM data_media WHERE MUID = t.MUID AND ((inference_custom IS NOT NULL AND inference_custom != '' AND inference_custom != '[]') OR (hashtag_detection IS NOT NULL AND hashtag_detection != '' AND hashtag_detection != '[]') OR (inference_world IS NOT NULL AND inference_world != '' AND inference_world != '[]'))) as inf_count
-          FROM tasks t
-          ORDER BY ${sort} ${order}
-        `;
-        const result = db.prepare(query).all();
-        db.close();
-        return result;
+        if (isDbAvailable()) {
+          logger.log('API:tasks:GET', `Executing SQLite query for tasks sorted by ${sort} ${order}`);
+          const db = getDb();
+          const query = `
+            SELECT t.id, t.MUID, t.seed_node, t.mining_depth, t.mining_type, t.hashtag_media_amount, t.created_at,
+                (SELECT COUNT(*) FROM data_media WHERE MUID = t.MUID) as p_count,
+                (SELECT COUNT(*) FROM data_recent_hashtags WHERE MUID = t.MUID) as h_count,
+                (SELECT COUNT(*) FROM data_media WHERE MUID = t.MUID AND ((inference_custom IS NOT NULL AND inference_custom != '' AND inference_custom != '[]') OR (hashtag_detection IS NOT NULL AND hashtag_detection != '' AND hashtag_detection != '[]') OR (inference_world IS NOT NULL AND inference_world != '' AND inference_world != '[]'))) as inf_count
+            FROM tasks t
+            ORDER BY ${sort} ${order}
+          `;
+          const result = db.prepare(query).all();
+          db.close();
+          return result;
+        }
+
+        logger.log('API:tasks:GET', `Falling back to static JSON tasks sorted by ${sort} ${order}`);
+        const staticTasks = getStaticTasks();
+        staticTasks.sort((a: any, b: any) => {
+          const valA = a[sort] ?? '';
+          const valB = b[sort] ?? '';
+          if (valA < valB) return order === 'ASC' ? -1 : 1;
+          if (valA > valB) return order === 'ASC' ? 1 : -1;
+          return 0;
+        });
+        return staticTasks;
       },
       ['tasks']
     );
 
     return NextResponse.json(tasks);
   } catch (error) {
-    logger.error('API:tasks:GET', 'Error fetching tasks from local SQLite', error);
-    return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 });
+    logger.error('API:tasks:GET', 'Error fetching tasks, falling back to static JSON', error);
+    try {
+      const staticTasks = getStaticTasks();
+      return NextResponse.json(staticTasks);
+    } catch (fallbackErr) {
+      return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 });
+    }
   }
 }
+

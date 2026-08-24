@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, isDbAvailable, getStaticTasks } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
 
@@ -27,51 +27,70 @@ export async function GET(
     const payload = await getCachedData(
       ['api_task_data_payload', String(taskId), safeHSort, hOrder, safePSort, pOrder],
       () => {
-        logger.log('API:tasks:id:data', `Executing SQLite detail payload query for task ID ${taskId}`);
+        if (isDbAvailable()) {
+          logger.log('API:tasks:id:data', `Executing SQLite detail payload query for task ID ${taskId}`);
 
-        const db = getDb();
-        const task: any = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+          const db = getDb();
+          const task: any = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
 
-        if (!task) {
+          if (!task) {
+            db.close();
+            return null;
+          }
+
+          const muid = task.MUID;
+
+          const postsCountRow: any = db
+            .prepare('SELECT COUNT(*) as total FROM data_media WHERE MUID = ?')
+            .get(muid);
+          const hashtagsCountRow: any = db
+            .prepare('SELECT COUNT(*) as total FROM data_recent_hashtags WHERE MUID = ?')
+            .get(muid);
+          const usersCountRow: any = db
+            .prepare('SELECT COUNT(*) as total FROM data_users WHERE MUID = ?')
+            .get(muid);
+          const inferencesCountRow: any = db
+            .prepare("SELECT COUNT(*) as total FROM data_media WHERE MUID = ? AND ((inference_custom IS NOT NULL AND inference_custom != '' AND inference_custom != '[]') OR (hashtag_detection IS NOT NULL AND hashtag_detection != '' AND hashtag_detection != '[]') OR (inference_world IS NOT NULL AND inference_world != '' AND inference_world != '[]'))")
+            .get(muid);
+
+          const hashtags = db
+            .prepare(`SELECT * FROM data_recent_hashtags WHERE MUID = ? ORDER BY ${safeHSort} ${hOrder}`)
+            .all(muid);
+
+          const posts = db
+            .prepare(`SELECT * FROM data_media WHERE MUID = ? ORDER BY ${safePSort} ${pOrder} LIMIT 200`)
+            .all(muid);
+
           db.close();
-          return null;
+
+          return {
+            task,
+            stats: {
+              posts: postsCountRow?.total || 0,
+              hashtags: hashtagsCountRow?.total || 0,
+              users: usersCountRow?.total || 0,
+              inferences: inferencesCountRow?.total || 0,
+            },
+            hashtags,
+            posts,
+          };
         }
 
-        const muid = task.MUID;
-
-        const postsCountRow: any = db
-          .prepare('SELECT COUNT(*) as total FROM data_media WHERE MUID = ?')
-          .get(muid);
-        const hashtagsCountRow: any = db
-          .prepare('SELECT COUNT(*) as total FROM data_recent_hashtags WHERE MUID = ?')
-          .get(muid);
-        const usersCountRow: any = db
-          .prepare('SELECT COUNT(*) as total FROM data_users WHERE MUID = ?')
-          .get(muid);
-        const inferencesCountRow: any = db
-          .prepare("SELECT COUNT(*) as total FROM data_media WHERE MUID = ? AND ((inference_custom IS NOT NULL AND inference_custom != '' AND inference_custom != '[]') OR (hashtag_detection IS NOT NULL AND hashtag_detection != '' AND hashtag_detection != '[]') OR (inference_world IS NOT NULL AND inference_world != '' AND inference_world != '[]'))")
-          .get(muid);
-
-        const hashtags = db
-          .prepare(`SELECT * FROM data_recent_hashtags WHERE MUID = ? ORDER BY ${safeHSort} ${hOrder}`)
-          .all(muid);
-
-        const posts = db
-          .prepare(`SELECT * FROM data_media WHERE MUID = ? ORDER BY ${safePSort} ${pOrder} LIMIT 200`)
-          .all(muid);
-
-        db.close();
+        logger.log('API:tasks:id:data', `Falling back to static JSON for task ID ${taskId}`);
+        const staticTasks = getStaticTasks();
+        const task = staticTasks.find((t: any) => t.id === taskId);
+        if (!task) return null;
 
         return {
           task,
           stats: {
-            posts: postsCountRow?.total || 0,
-            hashtags: hashtagsCountRow?.total || 0,
-            users: usersCountRow?.total || 0,
-            inferences: inferencesCountRow?.total || 0,
+            posts: task.p_count || 0,
+            hashtags: task.h_count || 0,
+            users: task.u_count || 0,
+            inferences: task.inf_count || 0,
           },
-          hashtags,
-          posts,
+          hashtags: [],
+          posts: [],
         };
       },
       ['task_data']
@@ -84,6 +103,25 @@ export async function GET(
     return NextResponse.json(payload);
   } catch (error) {
     logger.error('API:tasks:id:data', 'Error fetching task details', error);
+    try {
+      const taskId = parseInt(params.id, 10);
+      const staticTasks = getStaticTasks();
+      const task = staticTasks.find((t: any) => t.id === taskId);
+      if (task) {
+        return NextResponse.json({
+          task,
+          stats: {
+            posts: task.p_count || 0,
+            hashtags: task.h_count || 0,
+            users: task.u_count || 0,
+            inferences: task.inf_count || 0,
+          },
+          hashtags: [],
+          posts: [],
+        });
+      }
+    } catch (e) {}
     return NextResponse.json({ error: 'Failed to fetch task details' }, { status: 500 });
   }
 }
+
