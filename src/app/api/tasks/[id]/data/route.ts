@@ -10,7 +10,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const taskId = parseInt(params.id, 10);
+    const idParam = params.id;
     const { searchParams } = new URL(request.url);
 
     const hSort = searchParams.get('h_sort') || 'no_publications';
@@ -25,13 +25,15 @@ export async function GET(
     const safePSort = allowedPSort.includes(pSort) ? pSort : 'taken_at';
 
     const payload = await getCachedData(
-      ['api_task_data_payload', String(taskId), safeHSort, hOrder, safePSort, pOrder],
+      ['api_task_data_payload_v3', idParam, safeHSort, hOrder, safePSort, pOrder],
       () => {
         if (isDbAvailable()) {
-          logger.log('API:tasks:id:data', `Executing SQLite detail payload query for task ID ${taskId}`);
+          logger.log('API:tasks:id:data', `Executing SQLite detail payload query for task ${idParam}`);
 
           const db = getDb();
-          const task: any = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+          const task: any = db
+            .prepare('SELECT * FROM tasks WHERE MUID = ? OR CAST(id AS TEXT) = ?')
+            .get(idParam, idParam);
 
           if (!task) {
             db.close();
@@ -76,9 +78,9 @@ export async function GET(
           };
         }
 
-        logger.log('API:tasks:id:data', `Falling back to static JSON graph for task ID ${taskId}`);
+        logger.log('API:tasks:id:data', `Falling back to static JSON graph for task ${idParam}`);
         const staticTasks = getStaticTasks();
-        const task = staticTasks.find((t: any) => t.id === taskId);
+        const task = staticTasks.find((t: any) => t.MUID === idParam || String(t.id) === idParam);
         if (!task) return null;
 
         const fallbackData = getGraphFallbackData(task.MUID);
@@ -106,9 +108,9 @@ export async function GET(
   } catch (error) {
     logger.error('API:tasks:id:data', 'Error fetching task details', error);
     try {
-      const taskId = parseInt(params.id, 10);
+      const idParam = params.id;
       const staticTasks = getStaticTasks();
-      const task = staticTasks.find((t: any) => t.id === taskId);
+      const task = staticTasks.find((t: any) => t.MUID === idParam || String(t.id) === idParam);
       if (task) {
         const fallbackData = getGraphFallbackData(task.MUID);
         return NextResponse.json({
@@ -127,5 +129,3 @@ export async function GET(
     return NextResponse.json({ error: 'Failed to fetch task details' }, { status: 500 });
   }
 }
-
-

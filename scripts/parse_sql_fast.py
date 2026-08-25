@@ -196,6 +196,14 @@ if users_batch:
 
 conn.commit()
 
+# Deduplicate records across all tables
+print("Deduplicating records...")
+cursor.execute("DELETE FROM tasks WHERE id NOT IN (SELECT MIN(id) FROM tasks GROUP BY MUID)")
+cursor.execute("DELETE FROM data_media WHERE id NOT IN (SELECT MIN(id) FROM data_media GROUP BY MUID, COALESCE(pk, m_id, id))")
+cursor.execute("DELETE FROM data_users WHERE id NOT IN (SELECT MIN(id) FROM data_users GROUP BY MUID, COALESCE(pk, username, id))")
+cursor.execute("DELETE FROM data_recent_hashtags WHERE id NOT IN (SELECT MIN(id) FROM data_recent_hashtags GROUP BY MUID, hashtag)")
+conn.commit()
+
 # Extract tasks with counts
 cursor.execute("""
     SELECT t.id, t.MUID, t.seed_node, t.mining_depth, t.mining_type, t.hashtag_media_amount, t.created_at,

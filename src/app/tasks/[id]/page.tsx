@@ -113,11 +113,11 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
               Back to Tasks
             </Link>
             {task.mining_type.includes('user') ? (
-              <Link href={`/sigma/${task.id}`} className="btn btn-primary">
+              <Link href={`/sigma/${task.MUID}`} className="btn btn-primary">
                 Open User Network Graph
               </Link>
             ) : (
-              <Link href={`/graph/${task.id}`} className="btn btn-success">
+              <Link href={`/graph/${task.MUID}`} className="btn btn-success">
                 Open AI Network Graph
               </Link>
             )}

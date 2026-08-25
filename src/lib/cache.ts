@@ -37,3 +37,8 @@ export async function getCachedData<T>(
   memoryCache.set(cacheKey, { data: result, timestamp: Date.now() });
   return result;
 }
+
+export function clearMemoryCache() {
+  memoryCache.clear();
+}
+

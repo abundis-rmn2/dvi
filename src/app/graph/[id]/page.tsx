@@ -71,7 +71,7 @@ export default function AIGraphPage({ params }: { params: { id: string } }) {
             <Link href="/" className="btn btn-outline-secondary">
               Dashboard
             </Link>
-            <Link href={`/tasks/${task.id}`} className="btn btn-outline-primary">
+            <Link href={`/tasks/${task.MUID}`} className="btn btn-outline-primary">
               Task Details
             </Link>
           </div>

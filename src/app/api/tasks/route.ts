@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     }
 
     const tasks = await getCachedData(
-      ['api_tasks_list', sort, order],
+      ['api_tasks_v2', sort, order],
       () => {
         if (isDbAvailable()) {
           logger.log('API:tasks:GET', `Executing SQLite query for tasks sorted by ${sort} ${order}`);
@@ -29,6 +29,7 @@ export async function GET(request: Request) {
                 (SELECT COUNT(*) FROM data_recent_hashtags WHERE MUID = t.MUID) as h_count,
                 (SELECT COUNT(*) FROM data_media WHERE MUID = t.MUID AND ((inference_custom IS NOT NULL AND inference_custom != '' AND inference_custom != '[]') OR (hashtag_detection IS NOT NULL AND hashtag_detection != '' AND hashtag_detection != '[]') OR (inference_world IS NOT NULL AND inference_world != '' AND inference_world != '[]'))) as inf_count
             FROM tasks t
+            GROUP BY t.MUID
             ORDER BY ${sort} ${order}
           `;
           const result = db.prepare(query).all();
@@ -37,7 +38,13 @@ export async function GET(request: Request) {
         }
 
         logger.log('API:tasks:GET', `Falling back to static JSON tasks sorted by ${sort} ${order}`);
-        const staticTasks = getStaticTasks();
+        const rawStaticTasks = getStaticTasks();
+        const seenMuids = new Set<string>();
+        const staticTasks = rawStaticTasks.filter((t: any) => {
+          if (seenMuids.has(t.MUID)) return false;
+          seenMuids.add(t.MUID);
+          return true;
+        });
         staticTasks.sort((a: any, b: any) => {
           const valA = a[sort] ?? '';
           const valB = b[sort] ?? '';

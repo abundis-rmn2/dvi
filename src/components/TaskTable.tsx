@@ -119,7 +119,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({
                   <small>{new Date(task.created_at).toLocaleString()}</small>
                 </td>
                 <td className="text-center">
-                  <Link href={`/sigma/${task.id}`} className="btn btn-secondary btn-sm me-1">
+                  <Link href={`/sigma/${task.MUID}`} className="btn btn-secondary btn-sm me-1">
                     ✏️
                   </Link>
                   <Button

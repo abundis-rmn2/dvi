@@ -152,7 +152,7 @@ export default function Home() {
                           <td className="text-center">
                             <div className="btn-group btn-group-sm">
                               <Link
-                                href={`/tasks/${task.id}`}
+                                href={`/tasks/${task.MUID}`}
                                 className="btn btn-outline-primary"
                                 title="Inspect Task Details"
                               >
@@ -160,7 +160,7 @@ export default function Home() {
                               </Link>
                               {task.mining_type.includes('user') ? (
                                 <Link
-                                  href={`/sigma/${task.id}`}
+                                  href={`/sigma/${task.MUID}`}
                                   className="btn btn-outline-info"
                                   title="User Follower Graph"
                                 >
@@ -168,7 +168,7 @@ export default function Home() {
                                 </Link>
                               ) : (
                                 <Link
-                                  href={`/graph/${task.id}`}
+                                  href={`/graph/${task.MUID}`}
                                   className="btn btn-outline-success"
                                   title="AI Enriched Graph"
                                 >
