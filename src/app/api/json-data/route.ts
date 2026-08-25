@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb, isDbAvailable } from '@/lib/db';
+import { getDb, isDbAvailable, getGraphFallbackData } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
 
@@ -47,21 +47,35 @@ export async function GET(request: Request) {
       ['api_node_inspection', nodeType, node, muid],
       () => {
         if (!isDbAvailable()) {
-          logger.log('API:json-data', `SQLite DB not available, returning static inspection fallback`);
+          logger.log('API:json-data', `SQLite DB not available, parsing graph JSON fallback for MUID: ${muid}`);
+          const fallback = getGraphFallbackData(muid);
+
           if (nodeType === 'hashtag' || nodeType === 'ai_text_hashtag') {
+            const postsMap: Record<string, any> = {};
+            fallback.posts.forEach((p: any, idx: number) => {
+              postsMap[idx + 1] = p;
+            });
             return {
-              hashtag_info: { MUID: muid, node, no_publications: 'Static mode', mined_at: 'Static mode' },
-              post: {},
+              hashtag_info: { MUID: muid, node, no_publications: String(fallback.posts.length), mined_at: 'Static mode' },
+              post: postsMap,
             };
           } else if (nodeType === 'user') {
+            const cleanUsername = node.startsWith('u_') ? node.substring(2) : node;
+            const userPosts = fallback.posts.filter((p: any) => p.user_id === cleanUsername || p.user_id.includes(cleanUsername));
+            const postsMap: Record<string, any> = {};
+            (userPosts.length ? userPosts : fallback.posts).forEach((p: any, idx: number) => {
+              postsMap[idx + 1] = p;
+            });
             return {
-              user_info: { username: node.startsWith('u_') ? node.substring(2) : node },
-              post: {},
+              user_info: { username: cleanUsername },
+              post: postsMap,
             };
           } else {
-            return { post: {} };
+            const targetPost = fallback.posts.find((p: any) => p.m_id === node || p.id === node);
+            return { post: { 1: targetPost || { m_id: node, caption_text: node } } };
           }
         }
+
 
         logger.log('API:json-data', `Executing SQLite node lookup`, { node, nodeType, muid });
         const db = getDb();

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDb, isDbAvailable, getStaticTasks } from '@/lib/db';
+import { getDb, isDbAvailable, getStaticTasks, getGraphFallbackData } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
 
@@ -76,21 +76,23 @@ export async function GET(
           };
         }
 
-        logger.log('API:tasks:id:data', `Falling back to static JSON for task ID ${taskId}`);
+        logger.log('API:tasks:id:data', `Falling back to static JSON graph for task ID ${taskId}`);
         const staticTasks = getStaticTasks();
         const task = staticTasks.find((t: any) => t.id === taskId);
         if (!task) return null;
 
+        const fallbackData = getGraphFallbackData(task.MUID);
+
         return {
           task,
           stats: {
-            posts: task.p_count || 0,
-            hashtags: task.h_count || 0,
-            users: task.u_count || 0,
+            posts: fallbackData.posts.length || task.p_count || 0,
+            hashtags: fallbackData.hashtags.length || task.h_count || 0,
+            users: fallbackData.users.length || task.u_count || 0,
             inferences: task.inf_count || 0,
           },
-          hashtags: [],
-          posts: [],
+          hashtags: fallbackData.hashtags,
+          posts: fallbackData.posts,
         };
       },
       ['task_data']
@@ -108,20 +110,22 @@ export async function GET(
       const staticTasks = getStaticTasks();
       const task = staticTasks.find((t: any) => t.id === taskId);
       if (task) {
+        const fallbackData = getGraphFallbackData(task.MUID);
         return NextResponse.json({
           task,
           stats: {
-            posts: task.p_count || 0,
-            hashtags: task.h_count || 0,
-            users: task.u_count || 0,
+            posts: fallbackData.posts.length || task.p_count || 0,
+            hashtags: fallbackData.hashtags.length || task.h_count || 0,
+            users: fallbackData.users.length || task.u_count || 0,
             inferences: task.inf_count || 0,
           },
-          hashtags: [],
-          posts: [],
+          hashtags: fallbackData.hashtags,
+          posts: fallbackData.posts,
         });
       }
     } catch (e) {}
     return NextResponse.json({ error: 'Failed to fetch task details' }, { status: 500 });
   }
 }
+
 
