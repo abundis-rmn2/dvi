@@ -51,6 +51,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
   const [jsonFiles, setJsonFiles] = useState<string[]>([]);
   const [selectedPost, setSelectedPost] = useState<any | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [failedImageIds, setFailedImageIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     fetchTaskData();
@@ -106,11 +107,57 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
   const { task, stats, hashtags, posts } = data;
 
-  const getMediaImageUrl = (post: any, format: 'jpg' | 'webp' = 'jpg') => {
+  const getMediaImageCandidates = (post: any) => {
+    if (!post) return ['/img_not_inf.svg'];
+    const candidates: string[] = [];
+    const seedNode = task?.seed_node;
+    const mediaName = post.media || (post.user_id && post.pk ? `${post.user_id}_${post.pk}` : null);
     const postMediaId = post.m_id || post.pk;
-    if (!postMediaId) return null;
-    return `http://data.abundis.com.mx/media/exported_images/${task.MUID}/${postMediaId}_exported.${format}`;
+
+    if (seedNode && post.user_id && post.pk) {
+      candidates.push(`http://data.abundis.com.mx/media/${seedNode}/${post.user_id}_${post.pk}.jpg`);
+      candidates.push(`http://data.abundis.com.mx/media/${seedNode}/${post.user_id}_${post.pk}.webp`);
+    }
+    if (seedNode && mediaName) {
+      candidates.push(`http://data.abundis.com.mx/media/${seedNode}/${mediaName}.jpg`);
+      candidates.push(`http://data.abundis.com.mx/media/${seedNode}/${mediaName}.webp`);
+    }
+    if (task?.MUID && postMediaId) {
+      candidates.push(`http://data.abundis.com.mx/media/exported_images/${task.MUID}/${postMediaId}_exported.jpg`);
+      candidates.push(`http://data.abundis.com.mx/media/exported_images/${task.MUID}/${postMediaId}_exported.webp`);
+    }
+    if (post.user_id && post.pk) {
+      candidates.push(`http://data.abundis.com.mx/media/${post.user_id}/${post.user_id}_${post.pk}.jpg`);
+      candidates.push(`http://data.abundis.com.mx/media/${post.user_id}/${post.user_id}_${post.pk}.webp`);
+    }
+
+    candidates.push('/img_not_inf.svg');
+    return candidates;
   };
+
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>, post: any) => {
+    const target = e.target as HTMLImageElement;
+    const candidates = getMediaImageCandidates(post);
+    const currentStep = parseInt(target.dataset.step || '0', 10);
+    const nextStep = currentStep + 1;
+
+    if (nextStep < candidates.length - 1) {
+      target.dataset.step = String(nextStep);
+      target.src = candidates[nextStep];
+    } else {
+      target.src = '/img_not_inf.svg';
+      if (post?.id) {
+        setFailedImageIds((prev) => {
+          if (prev.has(post.id)) return prev;
+          const next = new Set(prev);
+          next.add(post.id);
+          return next;
+        });
+      }
+    }
+  };
+
+  const gridPosts = posts.filter((p) => !failedImageIds.has(p.id));
 
   return (
     <main>
@@ -245,6 +292,11 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
           <Card.Header className="bg-light fw-bold fs-5 d-flex justify-content-between align-items-center flex-wrap gap-2 py-3">
             <div className="d-flex align-items-center gap-3">
               <span>Network Posts ({posts.length})</span>
+              {failedImageIds.size > 0 && (
+                <Badge bg="secondary" className="fw-normal" style={{ fontSize: '0.8rem' }}>
+                  🎥 {failedImageIds.size} video/carousel items hidden from grid
+                </Badge>
+              )}
             </div>
             <div className="d-flex align-items-center gap-2">
               <span className="small text-muted me-2 d-none d-md-inline">View Mode:</span>
@@ -254,14 +306,14 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                   onClick={() => setViewMode('grid')}
                   className="fw-bold d-flex align-items-center gap-1"
                 >
-                  <span>📱</span> Instagram Grid
+                  <span>📱</span> Instagram Grid ({gridPosts.length})
                 </Button>
                 <Button
                   variant={viewMode === 'table' ? 'primary' : 'outline-primary'}
                   onClick={() => setViewMode('table')}
                   className="fw-bold d-flex align-items-center gap-1"
                 >
-                  <span>📋</span> Table View
+                  <span>📋</span> Table View ({posts.length})
                 </Button>
               </div>
             </div>
@@ -270,14 +322,18 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
             {viewMode === 'grid' ? (
               /* Instagram Grid View */
               <div className="p-3 bg-dark bg-opacity-10" style={{ maxHeight: '650px', overflowY: 'auto' }}>
-                {posts.length === 0 ? (
+                {gridPosts.length === 0 ? (
                   <div className="text-center text-muted py-5">
-                    <p className="mb-0">No media posts found</p>
+                    <p className="mb-0">No image posts available for grid view (or all items are video/carousel)</p>
+                    <Button variant="outline-primary" size="sm" className="mt-2" onClick={() => setViewMode('table')}>
+                      Switch to Table View
+                    </Button>
                   </div>
                 ) : (
                   <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
-                    {posts.map((p) => {
-                      const primaryImgUrl = getMediaImageUrl(p, 'jpg') || '/img_not_inf.svg';
+                    {gridPosts.map((p) => {
+                      const candidates = getMediaImageCandidates(p);
+                      const initialImgUrl = candidates[0];
 
                       return (
                         <div key={p.id} className="col">
@@ -291,23 +347,12 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                             onClick={() => setSelectedPost(p)}
                           >
                             <img
-                              src={primaryImgUrl}
+                              src={initialImgUrl}
+                              data-step="0"
                               alt={p.user_id || 'Post'}
                               className="w-100 h-100"
                               style={{ objectFit: 'cover' }}
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                if (target.dataset.triedFallback === 'true') {
-                                  target.src = '/img_not_inf.svg';
-                                } else if (target.src.endsWith('.jpg')) {
-                                  target.dataset.triedFallback = 'true';
-                                  target.src = getMediaImageUrl(p, 'webp') || '/img_not_inf.svg';
-                                } else if (target.src.includes('data.abundis.com.mx')) {
-                                  target.src = `https://data.abundis.com/media/exported_images/${task.MUID}/${p.m_id || p.pk}_exported.jpg`;
-                                } else {
-                                  target.src = '/img_not_inf.svg';
-                                }
-                              }}
+                              onError={(e) => handleImgError(e, p)}
                             />
                             {/* Hover overlay with Instagram style metrics */}
                             <div
@@ -344,7 +389,6 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                 <Table hover striped size="sm" className="align-middle mb-0">
                   <thead className="table-dark sticky-top">
                     <tr>
-                      <th style={{ width: '80px' }}>Image</th>
                       <th>User</th>
                       <th>Caption</th>
                       <th>Likes</th>
@@ -356,59 +400,19 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                   <tbody>
                     {posts.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="text-center text-muted py-3">
+                        <td colSpan={6} className="text-center text-muted py-3">
                           No media posts found
                         </td>
                       </tr>
                     ) : (
                       posts.map((p) => {
-                        let parsedTags: string[] = [];
-                        try {
-                          parsedTags = JSON.parse(p.hashtags_used);
-                        } catch {
-                          parsedTags = p.hashtags_used ? [p.hashtags_used] : [];
-                        }
-
                         const truncatedCaption =
                           p.caption_text?.length > 70
                             ? `${p.caption_text.substring(0, 70)}...`
                             : p.caption_text;
 
-                        const primaryImgUrl = getMediaImageUrl(p, 'jpg');
-
                         return (
                           <tr key={p.id}>
-                            <td className="text-center">
-                              {primaryImgUrl ? (
-                                <img
-                                  src={primaryImgUrl}
-                                  alt={p.user_id || 'Post Media'}
-                                  className="img-thumbnail rounded shadow-sm"
-                                  style={{ width: '52px', height: '52px', objectFit: 'cover', cursor: 'pointer' }}
-                                  onClick={() => setSelectedPost(p)}
-                                  onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    if (target.dataset.triedFallback === 'true') {
-                                      target.src = '/img_not_inf.svg';
-                                    } else if (target.src.endsWith('.jpg')) {
-                                      target.dataset.triedFallback = 'true';
-                                      target.src = getMediaImageUrl(p, 'webp') || '/img_not_inf.svg';
-                                    } else if (target.src.includes('data.abundis.com.mx')) {
-                                      target.src = `https://data.abundis.com/media/exported_images/${task.MUID}/${p.m_id || p.pk}_exported.jpg`;
-                                    } else {
-                                      target.src = '/img_not_inf.svg';
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <img
-                                  src="/img_not_inf.svg"
-                                  alt="img_not_inf"
-                                  className="img-thumbnail rounded shadow-sm"
-                                  style={{ width: '52px', height: '52px', objectFit: 'cover' }}
-                                />
-                              )}
-                            </td>
                             <td className="fw-bold">
                               <button
                                 type="button"
@@ -455,23 +459,12 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
             <Modal.Body className="p-4">
               <div className="text-center mb-3 bg-dark rounded p-3" style={{ minHeight: '260px' }}>
                 <img
-                  src={getMediaImageUrl(selectedPost, 'jpg') || '/img_not_inf.svg'}
+                  src={getMediaImageCandidates(selectedPost)[0]}
+                  data-step="0"
                   alt={selectedPost.user_id}
                   className="img-fluid rounded shadow"
                   style={{ maxHeight: '500px', objectFit: 'contain' }}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    if (target.dataset.triedFallback === 'true') {
-                      target.src = '/img_not_inf.svg';
-                    } else if (target.src.endsWith('.jpg')) {
-                      target.dataset.triedFallback = 'true';
-                      target.src = getMediaImageUrl(selectedPost, 'webp') || '/img_not_inf.svg';
-                    } else if (target.src.includes('data.abundis.com.mx')) {
-                      target.src = `https://data.abundis.com/media/exported_images/${task.MUID}/${selectedPost.m_id || selectedPost.pk}_exported.jpg`;
-                    } else {
-                      target.src = '/img_not_inf.svg';
-                    }
-                  }}
+                  onError={(e) => handleImgError(e, selectedPost)}
                 />
               </div>
 
@@ -500,16 +493,14 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
               </div>
             </Modal.Body>
             <Modal.Footer className="d-flex justify-content-between">
-              {getMediaImageUrl(selectedPost, 'jpg') && (
-                <a
-                  href={getMediaImageUrl(selectedPost, 'jpg') || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-outline-primary btn-sm"
-                >
-                  🔗 Open Direct Media URL
-                </a>
-              )}
+              <a
+                href={getMediaImageCandidates(selectedPost)[0]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline-primary btn-sm"
+              >
+                🔗 Open Direct Media URL
+              </a>
               <Button variant="secondary" onClick={() => setSelectedPost(null)}>
                 Close
               </Button>

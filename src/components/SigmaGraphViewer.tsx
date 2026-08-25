@@ -221,12 +221,20 @@ export const SigmaGraphViewer: React.FC<SigmaGraphViewerProps> = ({ muid }) => {
                             style={{ width: '85%', maxWidth: '400px', borderRadius: '6px', border: '1px solid #dee2e6' }}
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              if (target.src.endsWith('.jpg')) {
-                                target.src = `http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`;
-                              } else if (target.src.includes('data.abundis.com.mx')) {
-                                target.src = `https://data.abundis.com/media/exported_images/${muid}/${item.m_id}_exported.jpg`;
+                              const step = parseInt(target.dataset.step || '0', 10);
+                              const candidates = [
+                                `http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.jpg`,
+                                `http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`,
+                                item.user_id && item.pk ? `http://data.abundis.com.mx/media/${item.user_id}/${item.user_id}_${item.pk}.jpg` : null,
+                                item.user_id && item.pk ? `http://data.abundis.com.mx/media/${item.user_id}/${item.user_id}_${item.pk}.webp` : null,
+                                '/img_not_inf.svg'
+                              ].filter(Boolean) as string[];
+                              const nextStep = step + 1;
+                              if (nextStep < candidates.length) {
+                                target.dataset.step = String(nextStep);
+                                target.src = candidates[nextStep];
                               } else {
-                                target.style.display = 'none';
+                                target.src = '/img_not_inf.svg';
                               }
                             }}
                           />
