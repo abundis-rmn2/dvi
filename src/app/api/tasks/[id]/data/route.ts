@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getDb, isDbAvailable, getStaticTasks, getGraphFallbackData } from '@/lib/db';
 import { logger } from '@/utils/logger';
 import { getCachedData } from '@/lib/cache';
+import { formatHashtags } from '@/utils/hashtags';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,7 @@ export async function GET(
     const safePSort = allowedPSort.includes(pSort) ? pSort : 'taken_at';
 
     const payload = await getCachedData(
-      ['api_task_data_payload_v3', idParam, safeHSort, hOrder, safePSort, pOrder],
+      ['api_task_data_payload_v4', idParam, safeHSort, hOrder, safePSort, pOrder],
       () => {
         if (isDbAvailable()) {
           logger.log('API:tasks:id:data', `Executing SQLite detail payload query for task ${idParam}`);
@@ -59,11 +60,16 @@ export async function GET(
             .prepare(`SELECT * FROM data_recent_hashtags WHERE MUID = ? ORDER BY ${safeHSort} ${hOrder}`)
             .all(muid);
 
-          const posts = db
+          const rawPosts = db
             .prepare(`SELECT * FROM data_media WHERE MUID = ? ORDER BY ${safePSort} ${pOrder} LIMIT 200`)
             .all(muid);
 
           db.close();
+
+          const posts = rawPosts.map((p: any) => ({
+            ...p,
+            hashtags_used: formatHashtags(p.hashtags_used),
+          }));
 
           return {
             task,
@@ -84,6 +90,10 @@ export async function GET(
         if (!task) return null;
 
         const fallbackData = getGraphFallbackData(task.MUID);
+        const formattedPosts = fallbackData.posts.map((p: any) => ({
+          ...p,
+          hashtags_used: formatHashtags(p.hashtags_used),
+        }));
 
         return {
           task,
@@ -94,7 +104,7 @@ export async function GET(
             inferences: task.inf_count || 0,
           },
           hashtags: fallbackData.hashtags,
-          posts: fallbackData.posts,
+          posts: formattedPosts,
         };
       },
       ['task_data']

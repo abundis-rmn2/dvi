@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, Spinner, Alert, Badge } from 'react-bootstrap';
 import { logger } from '@/utils/logger';
+import { formatHashtags } from '@/utils/hashtags';
 
 interface SigmaGraphViewerProps {
   muid: string;
@@ -236,6 +237,9 @@ export const SigmaGraphViewer: React.FC<SigmaGraphViewerProps> = ({ muid }) => {
                         <li><strong>Posted @:</strong> {item.taken_at}</li>
                         <li><strong>Comments:</strong> {item.comment_count}</li>
                         <li><strong>Likes:</strong> {item.like_count}</li>
+                        {item.hashtags_used && (
+                          <li><strong>Hashtags:</strong> {formatHashtags(item.hashtags_used)}</li>
+                        )}
                         <li className="mt-1 text-muted"><em>{item.caption_text}</em></li>
                       </ul>
                     </div>

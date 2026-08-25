@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Table, Badge, Spinner, Alert, Button, Row, Col, Modal } from 'react-bootstrap';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
+import { formatHashtags } from '@/utils/hashtags';
 
 interface TaskDetailData {
   task: {
@@ -426,7 +427,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                             </td>
                             <td>
                               <small className="text-muted">
-                                {Array.isArray(parsedTags) ? parsedTags.join(', ') : parsedTags}
+                                {formatHashtags(p.hashtags_used)}
                               </small>
                             </td>
                             <td>
@@ -493,7 +494,7 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
                 )}
                 {selectedPost.hashtags_used && (
                   <div className="small text-muted border-top pt-2">
-                    <strong>Hashtags:</strong> {selectedPost.hashtags_used}
+                    <strong>Hashtags:</strong> {formatHashtags(selectedPost.hashtags_used)}
                   </div>
                 )}
               </div>
