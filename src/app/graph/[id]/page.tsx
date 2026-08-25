@@ -32,34 +32,26 @@ export default function AIGraphPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <main>
-        <Navigation />
-        <div className="container py-5 text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-2 text-muted">Loading graph workspace...</p>
-        </div>
+      <main className="container py-5 text-center">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-2 text-muted">Loading graph workspace...</p>
       </main>
     );
   }
 
   if (error || !task) {
     return (
-      <main>
-        <Navigation />
-        <div className="container py-5">
-          <Alert variant="danger">{error || 'Task not found'}</Alert>
-          <Link href="/" className="btn btn-secondary">
-            Back to Tasks
-          </Link>
-        </div>
+      <main className="container py-5">
+        <Alert variant="danger">{error || 'Task not found'}</Alert>
+        <Link href="/" className="btn btn-secondary">
+          Back to Tasks
+        </Link>
       </main>
     );
   }
 
   return (
-    <main>
-      <Navigation />
-      <div className="container py-4">
+    <main className="container py-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h2 className="mb-0 fw-bold">Network Graph AI Analysis</h2>
@@ -78,7 +70,6 @@ export default function AIGraphPage({ params }: { params: { id: string } }) {
         </div>
 
         <AIGraphViewer muid={task.MUID} />
-      </div>
     </main>
   );
 }

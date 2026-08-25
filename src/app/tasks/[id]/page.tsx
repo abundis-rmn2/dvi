@@ -81,26 +81,20 @@ export default function TaskDetailPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <main>
-        <Navigation />
-        <div className="container py-5 text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-2 text-muted">Loading task details...</p>
-        </div>
+      <main className="container py-5 text-center">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-2 text-muted">Loading task details...</p>
       </main>
     );
   }
 
   if (error || !data) {
     return (
-      <main>
-        <Navigation />
-        <div className="container py-5">
-          <Alert variant="danger">{error || 'Task data not available'}</Alert>
-          <Link href="/" className="btn btn-secondary">
-            Back to Tasks
-          </Link>
-        </div>
+      <main className="container py-5">
+        <Alert variant="danger">{error || 'Task data not available'}</Alert>
+        <Link href="/" className="btn btn-secondary">
+          Back to Tasks
+        </Link>
       </main>
     );
   }

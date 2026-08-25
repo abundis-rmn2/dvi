@@ -59,9 +59,7 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <Navigation />
-      <div className="container py-4">
+    <main className="container py-4">
         <Card className="shadow-sm">
           <Card.Header className="bg-primary text-white d-flex justify-content-between align-items-center py-3">
             <h3 className="mb-0 fs-4 fw-bold">Data Mining Tasks Dashboard (Consultation Mode)</h3>
@@ -186,7 +184,6 @@ export default function Home() {
             )}
           </Card.Body>
         </Card>
-      </div>
     </main>
   );
 }
