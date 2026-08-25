@@ -198,11 +198,51 @@ export const SigmaGraphViewer: React.FC<SigmaGraphViewerProps> = ({ muid }) => {
 
         {selectedNodeData && (
           <Card className="mt-3 bg-light">
-            <Card.Header className="fw-bold">
-              Selected Node Details: {selectedNodeData.node}
+            <Card.Header className="fw-bold d-flex justify-content-between align-items-center">
+              <span>Selected Node Details: {selectedNodeData.node}</span>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setSelectedNodeData(null)}
+              />
             </Card.Header>
             <Card.Body>
-              <pre style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              {selectedNodeData.post && Object.keys(selectedNodeData.post).length > 0 && (
+                <div className="mb-3">
+                  <h6 className="fw-bold text-dark border-bottom pb-2 fs-6">Publication Images from Data Server</h6>
+                  {Object.entries(selectedNodeData.post).map(([key, item]: [string, any]) => (
+                    <div key={key} className="border-bottom py-2">
+                      {item.m_id && (
+                        <div className="mb-2 text-center">
+                          <img
+                            src={`http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.jpg`}
+                            alt={item.m_id}
+                            style={{ width: '85%', maxWidth: '400px', borderRadius: '6px', border: '1px solid #dee2e6' }}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              if (target.src.endsWith('.jpg')) {
+                                target.src = `http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`;
+                              } else if (target.src.includes('data.abundis.com.mx')) {
+                                target.src = `https://data.abundis.com/media/exported_images/${muid}/${item.m_id}_exported.jpg`;
+                              } else {
+                                target.style.display = 'none';
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+                      <ul className="list-unstyled small mb-0">
+                        <li><strong>User:</strong> {item.user_id}</li>
+                        <li><strong>Posted @:</strong> {item.taken_at}</li>
+                        <li><strong>Comments:</strong> {item.comment_count}</li>
+                        <li><strong>Likes:</strong> {item.like_count}</li>
+                        <li className="mt-1 text-muted"><em>{item.caption_text}</em></li>
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <pre style={{ maxHeight: '200px', overflowY: 'auto' }} className="mb-0 bg-white p-2 border rounded">
                 {JSON.stringify(selectedNodeData, null, 2)}
               </pre>
             </Card.Body>

@@ -1183,19 +1183,19 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
                       {item.m_id && (
                         <div className="mb-2 text-center">
                           <img
-                            src={`http://data.abundis.com.mx/media//exported_images/${muid}/${item.m_id}_exported.jpg`}
+                            src={`http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.jpg`}
                             alt={item.m_id}
-                            style={{ width: '85%', borderRadius: '6px', border: '1px solid #dee2e6' }}
+                            style={{ width: '85%', maxWidth: '300px', borderRadius: '6px', border: '1px solid #dee2e6' }}
                             onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                          />
-                          <img
-                            src={`http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`}
-                            alt={item.m_id}
-                            style={{ width: '85%', borderRadius: '6px', border: '1px solid #dee2e6' }}
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
+                              const target = e.target as HTMLImageElement;
+                              if (target.dataset.triedFallback === 'true') {
+                                target.src = '/img_not_inf.svg';
+                              } else if (target.src.endsWith('.jpg')) {
+                                target.dataset.triedFallback = 'true';
+                                target.src = `http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`;
+                              } else {
+                                target.src = '/img_not_inf.svg';
+                              }
                             }}
                           />
                         </div>
@@ -1350,19 +1350,19 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
                       {item.m_id && (
                         <div className="mt-2 d-flex gap-2">
                           <img
-                            src={`http://data.abundis.com.mx/media//exported_images/${muid}/${item.m_id}_exported.jpg`}
+                            src={`http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.jpg`}
                             alt={item.m_id}
                             style={{ maxHeight: '180px', borderRadius: '4px' }}
                             onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
-                            }}
-                          />
-                          <img
-                            src={`http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`}
-                            alt={item.m_id}
-                            style={{ maxHeight: '180px', borderRadius: '4px' }}
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = 'none';
+                              const target = e.target as HTMLImageElement;
+                              if (target.dataset.triedFallback === 'true') {
+                                target.src = '/img_not_inf.svg';
+                              } else if (target.src.endsWith('.jpg')) {
+                                target.dataset.triedFallback = 'true';
+                                target.src = `http://data.abundis.com.mx/media/exported_images/${muid}/${item.m_id}_exported.webp`;
+                              } else {
+                                target.src = '/img_not_inf.svg';
+                              }
                             }}
                           />
                         </div>
