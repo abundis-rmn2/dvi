@@ -15,8 +15,55 @@ export function MethodologyPaper() {
     }
   };
 
+  const paperJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    headline:
+      'Mining, Shaping, Visualizing, and Interpreting Instagram Hypertextual Networks of Freight Train Graffiti Communalities in North America Using Machine Learning Custom Models and Graphology',
+    name:
+      'Mining, Shaping, Visualizing, and Interpreting Instagram Hypertextual Networks of Freight Train Graffiti Communalities in North America',
+    author: [
+      {
+        '@type': 'Person',
+        name: 'Angel R. Abundis',
+        email: 'abundiscomunicacion@gmail.com',
+        affiliation: {
+          '@type': 'EducationalOrganization',
+          name: 'Departamento de Estudios de la Comunicación Social, CUCSH — Universidad de Guadalajara',
+        },
+      },
+    ],
+    publisher: {
+      '@type': 'Organization',
+      name: 'UXUC Journal',
+    },
+    isPartOf: {
+      '@type': 'PublicationIssue',
+      issueNumber: 'N2',
+      volumeNumber: 'V5',
+      name: 'Designing Urban Experiences',
+      pageStart: '68',
+      pageEnd: '87',
+    },
+    keywords: [
+      'Freight Train Graffiti',
+      'Instagram Hypertextual Networks',
+      'Graphology',
+      'Machine Learning',
+      'Computer Vision',
+      'spaCy NLP',
+      'Triad of Self-Announcement',
+      'Communalities in North America',
+    ],
+    inLanguage: 'en',
+  };
+
   return (
     <div className="bg-light min-vh-100 py-4">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(paperJsonLd) }}
+      />
       <Container>
         {/* Journal Top Header */}
         <header className="bg-white p-4 p-md-5 rounded-4 shadow-sm border mb-4">
@@ -28,8 +75,8 @@ export function MethodologyPaper() {
               <Badge bg="dark" className="px-3 py-2">
                 📄 Original Paper PDF Transpiled + High-Res Figures
               </Badge>
-              <Link href="/listing" className="btn btn-sm btn-outline-primary fw-bold">
-                📊 Live Mining Tasks (/listing)
+              <Link href="/hashtags" className="btn btn-sm btn-outline-primary fw-bold">
+                📊 Live Mining Tasks (/hashtags)
               </Link>
             </div>
           </div>
@@ -165,8 +212,8 @@ export function MethodologyPaper() {
                 <p className="small mb-3 text-light opacity-90">
                   Explore mined tasks, node counts, and live Graphology visualizations.
                 </p>
-                <Link href="/listing" className="btn btn-light btn-sm fw-bold">
-                  View Tasks (/listing)
+                <Link href="/hashtags" className="btn btn-light btn-sm fw-bold">
+                  View Tasks (/hashtags)
                 </Link>
               </Card>
             </div>
@@ -237,9 +284,14 @@ export function MethodologyPaper() {
 
                 {/* Subsections 2.1, 2.2, 2.3 */}
                 <div id="sec-2-1" className="mt-4 pt-3 border-top">
-                  <h4 className="fw-bold text-primary mb-3">2.1 Data Collection Processes &amp; idmb Bot</h4>
+                  <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <h4 className="fw-bold text-primary mb-0">2.1 Data Collection Processes &amp; idmb Bot</h4>
+                    <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary btn-sm font-monospace fw-bold">
+                      📦 GitHub Repo: idmb 🔗
+                    </a>
+                  </div>
                   <p className="text-secondary" style={{ lineHeight: '1.8' }}>
-                    The Data Collection Processes detailed herein delineate the systematic approach undertaken by the <em>Instagram Data Mining Bot</em> (<code>idmb</code>) to extract and process data from Instagram&apos;s extensive user-generated data repository.
+                    The Data Collection Processes detailed herein delineate the systematic approach undertaken by the <em>Instagram Data Mining Bot</em> (<a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="text-primary font-monospace fw-bold">idmb 🔗</a>) to extract and process data from Instagram&apos;s extensive user-generated data repository.
                   </p>
                   <Row className="g-3 my-2">
                     <Col md={6}>
@@ -319,7 +371,12 @@ export function MethodologyPaper() {
 
                 {/* Machine Learning Section */}
                 <div id="sec-2-2" className="mt-4 pt-3 border-top">
-                  <h4 className="fw-bold text-success mb-3">2.2 Application of Machine Learning Techniques (TensorFlow)</h4>
+                  <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <h4 className="fw-bold text-success mb-0">2.2 Application of Machine Learning Techniques (TensorFlow)</h4>
+                    <a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="btn btn-outline-success btn-sm font-monospace fw-bold">
+                      📦 GitHub Repo: Graffiti_Detection_OD_TensorFlow 🔗
+                    </a>
+                  </div>
                   <p className="text-secondary" style={{ lineHeight: '1.8' }}>
                     This work employs <code>TensorFlow</code> (Abadi, 2015) and <code>spaCy</code> (Honnibal, 2020) to infer significant symbolic content in Instagram posts. Object detection models categorize visual graffiti styles, connecting these inferences back to post and user nodes.
                   </p>
@@ -359,7 +416,12 @@ export function MethodologyPaper() {
 
                 {/* NLP Section */}
                 <div id="sec-2-3" className="mt-4 pt-3 border-top">
-                  <h4 className="fw-bold text-warning text-dark mb-3">2.3 Natural Language Processing (NLP) Analysis (spaCy)</h4>
+                  <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                    <h4 className="fw-bold text-warning text-dark mb-0">2.3 Natural Language Processing (NLP) Analysis (spaCy)</h4>
+                    <a href="https://github.com/abundis-rmn2/Hashtag_Custom_NER_spaCy" target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark btn-sm font-monospace fw-bold">
+                      📦 GitHub Repo: Hashtag_Custom_NER_spaCy 🔗
+                    </a>
+                  </div>
                   <p className="text-secondary" style={{ lineHeight: '1.8' }}>
                     Deconstructing complex hashtags (e.g. <code>#FreightTrainGraffiti</code>) using custom <code>spaCy</code> functions:
                   </p>

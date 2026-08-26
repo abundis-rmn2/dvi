@@ -44,8 +44,8 @@ export default function HomeIndexPage() {
             <Link href={paperUrl} className="btn btn-primary btn-lg fw-bold">
               📘 Read Full Methodology Paper
             </Link>
-            <Link href="/listing" className="btn btn-outline-light btn-lg fw-bold">
-              📊 Explore Data Tasks (/listing)
+            <Link href="/hashtags" className="btn btn-outline-light btn-lg fw-bold">
+              📊 Explore Data Tasks (/hashtags)
             </Link>
           </div>
         </div>
@@ -113,8 +113,8 @@ export default function HomeIndexPage() {
           <section className="mb-5">
             <h3 className="fw-bold mb-4 text-dark d-flex align-items-center justify-content-between">
               <span>⚡ Computational Framework &amp; Multimodal Architecture</span>
-              <Link href="/listing" className="btn btn-sm btn-outline-primary fw-bold">
-                View All Tasks in /listing &rarr;
+              <Link href="/hashtags" className="btn btn-sm btn-outline-primary fw-bold">
+                View All Tasks in /hashtags &rarr;
               </Link>
             </h3>
 
@@ -127,20 +127,30 @@ export default function HomeIndexPage() {
               {/* Item 1 */}
               <Card className="shadow-sm border-0 border-start border-4 border-primary hover-shadow transition-all">
                 <Card.Body className="p-4">
-                  <div className="d-flex align-items-center justify-content-between mb-2">
+                  <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <span className="badge bg-primary px-3 py-2 font-monospace">01 / DATA MINING</span>
-                    <small className="text-muted">Python 3 + instagrapi</small>
+                    <div className="d-flex gap-2 align-items-center">
+                      <small className="text-muted">Python 3 + instagrapi</small>
+                      <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary btn-sm font-monospace py-0 px-2">
+                        📦 GitHub: idmb 🔗
+                      </a>
+                    </div>
                   </div>
                   <h4 className="fw-bold text-dark mb-2">
                     Social Media Data Mining &amp; Relational Modeling
                   </h4>
                   <p className="text-secondary mb-3">
-                    Systematic extraction of Instagram posts, user profiles, captions, hashtags, and interaction metadata through custom automated bots (`instagrapi`), structured inside a relational SQL database.
+                    Systematic extraction of Instagram posts, user profiles, captions, hashtags, and interaction metadata through custom automated bots (<code>idmb</code>), structured inside a relational SQL database.
                   </p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    <Badge bg="light" text="dark" className="border">Posts Data</Badge>
-                    <Badge bg="light" text="dark" className="border">Hashtags Depth</Badge>
-                    <Badge bg="light" text="dark" className="border">SQL Storage</Badge>
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div className="d-flex gap-2 flex-wrap">
+                      <Badge bg="light" text="dark" className="border">Posts Data</Badge>
+                      <Badge bg="light" text="dark" className="border">Hashtags Depth</Badge>
+                      <Badge bg="light" text="dark" className="border">SQL Storage</Badge>
+                    </div>
+                    <a href="https://www.abundis.com.mx/en/thesis/visualization-of-a-hypertextual-interaction-field-in-the-form-of-a-network-graph-using-computational-processes-case-study-graffiti-on-freight-trains-in-north-america" target="_blank" rel="noopener noreferrer" className="btn btn-link text-primary text-decoration-none p-0 small fw-bold">
+                      🌐 Read Project at abundis.com.mx 🔗
+                    </a>
                   </div>
                 </Card.Body>
               </Card>
@@ -148,9 +158,14 @@ export default function HomeIndexPage() {
               {/* Item 2 */}
               <Card className="shadow-sm border-0 border-start border-4 border-success hover-shadow transition-all">
                 <Card.Body className="p-4">
-                  <div className="d-flex align-items-center justify-content-between mb-2">
+                  <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <span className="badge bg-success px-3 py-2 font-monospace">02 / IMAGE_AI</span>
-                    <small className="text-muted">TensorFlow + Computer Vision</small>
+                    <div className="d-flex gap-2 align-items-center">
+                      <small className="text-muted">TensorFlow + Computer Vision</small>
+                      <a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="btn btn-outline-success btn-sm font-monospace py-0 px-2">
+                        📦 GitHub: ResNet OD Model 🔗
+                      </a>
+                    </div>
                   </div>
                   <h4 className="fw-bold text-dark mb-2">
                     Computer Vision Object Detection &amp; Style Classification
@@ -158,10 +173,15 @@ export default function HomeIndexPage() {
                   <p className="text-secondary mb-3">
                     Deployment of Convolutional Object Detection models (trained on 100+ instances per category) to recognize and bound visual graffiti typologies: <em>Wildstyle</em>, <em>Bomba</em>, <em>S_Tren</em>, <em>Moniker</em>, <em>Caracter</em>, and <em>Tag</em>.
                   </p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    <Badge bg="light" text="dark" className="border">Wildstyle (0.94 score)</Badge>
-                    <Badge bg="light" text="dark" className="border">S_Tren (0.95 score)</Badge>
-                    <Badge bg="light" text="dark" className="border">Moniker &amp; Bomba</Badge>
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div className="d-flex gap-2 flex-wrap">
+                      <Badge bg="light" text="dark" className="border">Wildstyle (0.94 score)</Badge>
+                      <Badge bg="light" text="dark" className="border">S_Tren (0.95 score)</Badge>
+                      <Badge bg="light" text="dark" className="border">Moniker &amp; Bomba</Badge>
+                    </div>
+                    <a href="https://www.abundis.com.mx" target="_blank" rel="noopener noreferrer" className="btn btn-link text-success text-decoration-none p-0 small fw-bold">
+                      🌐 AI Models at abundis.com.mx 🔗
+                    </a>
                   </div>
                 </Card.Body>
               </Card>
@@ -169,20 +189,30 @@ export default function HomeIndexPage() {
               {/* Item 3 */}
               <Card className="shadow-sm border-0 border-start border-4 border-warning hover-shadow transition-all">
                 <Card.Body className="p-4">
-                  <div className="d-flex align-items-center justify-content-between mb-2">
+                  <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <span className="badge bg-warning text-dark px-3 py-2 font-monospace">03 / TEXT_AI</span>
-                    <small className="text-muted">spaCy + NLP Entity Recognition</small>
+                    <div className="d-flex gap-2 align-items-center">
+                      <small className="text-muted">spaCy + NLP Entity Recognition</small>
+                      <a href="https://github.com/abundis-rmn2/Hashtag_Custom_NER_spaCy" target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark btn-sm font-monospace py-0 px-2">
+                        📦 GitHub: spaCy Custom NER 🔗
+                      </a>
+                    </div>
                   </div>
                   <h4 className="fw-bold text-dark mb-2">
                     Natural Language Processing &amp; Out-of-Vocabulary Extraction
                   </h4>
                   <p className="text-secondary mb-3">
-                    Utilization of NLP models (`spaCy`) with Bag-of-Words (BOW) dictionaries to index North American cities, railroad lingo, and graffiti terminology. Combined with Out-of-Vocabulary (OOV) named entity recognition to automatically isolate <em>writers</em> and <em>crews</em>.
+                    Utilization of NLP models (<code>spaCy</code>) with Bag-of-Words (BOW) dictionaries to index North American cities, railroad lingo, and graffiti terminology. Combined with Out-of-Vocabulary (OOV) named entity recognition to automatically isolate <em>writers</em> and <em>crews</em>.
                   </p>
-                  <div className="d-flex gap-2 flex-wrap">
-                    <Badge bg="light" text="dark" className="border">Rail Lingo</Badge>
-                    <Badge bg="light" text="dark" className="border">City Toponyms</Badge>
-                    <Badge bg="light" text="dark" className="border">OOV Writer Tags</Badge>
+                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div className="d-flex gap-2 flex-wrap">
+                      <Badge bg="light" text="dark" className="border">Rail Lingo</Badge>
+                      <Badge bg="light" text="dark" className="border">City Toponyms</Badge>
+                      <Badge bg="light" text="dark" className="border">OOV Writer Tags</Badge>
+                    </div>
+                    <a href="https://doi.org/10.48619/gsa.v2i1.837" target="_blank" rel="noopener noreferrer" className="btn btn-link text-dark text-decoration-none p-0 small fw-bold">
+                      📄 Published Paper (DOI) 🔗
+                    </a>
                   </div>
                 </Card.Body>
               </Card>
@@ -213,8 +243,8 @@ export default function HomeIndexPage() {
               <p className="small text-light opacity-90 mb-4">
                 Access the complete dataset of mined tasks, MUIDs, network graphs, and inference counts.
               </p>
-              <Link href="/listing" className="btn btn-info btn-lg w-100 fw-bold py-2">
-                Open /listing Dashboard
+              <Link href="/hashtags" className="btn btn-info btn-lg w-100 fw-bold py-2">
+                Open /hashtags Dashboard
               </Link>
             </Card.Body>
           </Card>
@@ -242,18 +272,32 @@ export default function HomeIndexPage() {
             </Card.Body>
           </Card>
 
-          {/* External Thesis Link */}
+          {/* External Links & Open Source Repos */}
           <Card className="shadow-sm border-0">
-            <Card.Header className="bg-dark text-white fw-bold">
-              🌐 External Publications
+            <Card.Header className="bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+              <span>🌐 Publications &amp; Open Source Repos</span>
             </Card.Header>
             <Card.Body className="d-flex flex-column gap-2">
-              <a href={externalThesisUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark text-start btn-sm">
-                🎓 Full Master&apos;s Thesis at abundis.com.mx 🔗
+              <a href={externalThesisUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark text-start btn-sm fw-bold">
+                🎓 Master&apos;s Thesis at abundis.com.mx 🔗
               </a>
-              <Link href="/hashtags" className="btn btn-outline-primary text-start btn-sm">
-                🏷️ Hashtags Network Analysis
+              <Link href="/hashtags" className="btn btn-outline-primary text-start btn-sm fw-bold">
+                🏷️ Hashtags Network Analysis Dashboard
               </Link>
+              <hr className="my-1" />
+              <div className="small text-muted fw-bold font-monospace">📦 GitHub Repositories:</div>
+              <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-secondary text-start font-monospace">
+                🐍 idmb — Instagram Mining Bot 🔗
+              </a>
+              <a href="https://github.com/abundis-rmn2/dvi" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-secondary text-start font-monospace">
+                ⚛️ dvi — Network Data Visualization Interface 🔗
+              </a>
+              <a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-secondary text-start font-monospace">
+                👁️ ResNet Object Detection Model 🔗
+              </a>
+              <a href="https://github.com/abundis-rmn2/Hashtag_Custom_NER_spaCy" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-secondary text-start font-monospace">
+                🔤 spaCy Custom NER Model 🔗
+              </a>
             </Card.Body>
           </Card>
         </Col>

@@ -25,6 +25,11 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: '/listing',
+        destination: '/hashtags',
+        permanent: true,
+      },
+      {
         source: '/es',
         destination: '/',
         permanent: false,

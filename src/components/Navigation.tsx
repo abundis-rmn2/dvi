@@ -20,11 +20,8 @@ export const Navigation: React.FC = () => {
             <Nav.Link as={Link} href="/methodology">
               📘 Methodology Paper
             </Nav.Link>
-            <Nav.Link as={Link} href="/listing">
-              📊 Data Mining Tasks (/listing)
-            </Nav.Link>
             <Nav.Link as={Link} href="/hashtags">
-              🏷️ Hashtags
+              📊 Data Mining Tasks & Hashtags (/hashtags)
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>

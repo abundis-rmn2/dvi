@@ -37,9 +37,18 @@ export function Footer() {
             <div className="d-flex flex-wrap gap-2 mb-3">
               <Badge bg="secondary">🔍 Researcher</Badge>
               <Badge bg="secondary">🌐 Ethnography</Badge>
-              <Badge bg="secondary">🐍 Python Data Mining (idmb bot)</Badge>
-              <Badge bg="secondary">👁️ ML Vision (ResNet)</Badge>
-              <Badge bg="secondary">⚛️ JS React Web (SigmaJS / Graphology)</Badge>
+              <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
+                <Badge bg="secondary" className="hover-opacity">🐍 idmb Mining Bot 🔗</Badge>
+              </a>
+              <a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
+                <Badge bg="secondary" className="hover-opacity">👁️ ML Vision (ResNet) 🔗</Badge>
+              </a>
+              <a href="https://github.com/abundis-rmn2/Hashtag_Custom_NER_spaCy" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
+                <Badge bg="secondary" className="hover-opacity">🔤 spaCy Custom NER 🔗</Badge>
+              </a>
+              <a href="https://github.com/abundis-rmn2/dvi" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
+                <Badge bg="secondary" className="hover-opacity">⚛️ DVI Web Interface 🔗</Badge>
+              </a>
             </div>
 
             <p className="text-light small mb-2" style={{ lineHeight: '1.6' }}>
@@ -47,7 +56,7 @@ export function Footer() {
             </p>
 
             <p className="text-white-50 small mb-0" style={{ lineHeight: '1.6' }}>
-              Methodologically, field and digital ethnography were combined with automated Instagram hashtag data mining through the development of the <code>idmb</code> bot. Hypertextual interaction metadata was modeled in complex network graphs using ForceAtlas layouts with SigmaJS and Graphology to analyze style propagation and recognition flows. Additionally, a CNN classifier (ResNet) was trained to recognize graffiti styles (monikers, tags, throw-ups). The conceptual framework integrated Jenkins&apos; participatory culture and Thompson&apos;s social mediation theories.
+              Methodologically, field and digital ethnography were combined with automated Instagram hashtag data mining through the development of the <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="text-info font-monospace text-decoration-none fw-bold">idmb bot 🔗</a>. Hypertextual interaction metadata was modeled in complex network graphs using ForceAtlas layouts with SigmaJS and Graphology to analyze style propagation and recognition flows. Additionally, a CNN classifier (<a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="text-info text-decoration-none fw-bold">ResNet 🔗</a>) was trained to recognize graffiti styles (monikers, tags, throw-ups). The conceptual framework integrated Jenkins&apos; participatory culture and Thompson&apos;s social mediation theories.
             </p>
           </Col>
 
