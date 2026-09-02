@@ -1,44 +1,5 @@
 [
   {
-    "id": 103,
-    "MUID": "freightgraffiti_0_hashtagRecent_30_be661c3d",
-    "seed_node": "freightgraffiti",
-    "mining_depth": 0,
-    "mining_type": "hashtagRecent",
-    "hashtag_media_amount": 30,
-    "created_at": "2024-04-08 06:00:00",
-    "p_count": 32,
-    "h_count": 1,
-    "u_count": 0,
-    "inf_count": 0
-  },
-  {
-    "id": 104,
-    "MUID": "fr8_1_hashtagRecent_6_769db6a5",
-    "seed_node": "fr8",
-    "mining_depth": 1,
-    "mining_type": "hashtagRecent",
-    "hashtag_media_amount": 6,
-    "created_at": "2024-04-08 06:00:00",
-    "p_count": 6,
-    "h_count": 1,
-    "u_count": 0,
-    "inf_count": 0
-  },
-  {
-    "id": 105,
-    "MUID": "fr8_1_hashtagRecent_6_a981b121",
-    "seed_node": "fr8",
-    "mining_depth": 1,
-    "mining_type": "hashtagRecent",
-    "hashtag_media_amount": 6,
-    "created_at": "2024-04-08 06:00:00",
-    "p_count": 29,
-    "h_count": 6,
-    "u_count": 0,
-    "inf_count": 0
-  },
-  {
     "id": 144,
     "MUID": "freightgraffiti_1_hashtagTop_3_27419da5",
     "seed_node": "freightgraffiti",
@@ -516,6 +477,45 @@
     "created_at": "2022-09-02 15:17:59",
     "p_count": 37,
     "h_count": 16,
+    "u_count": 0,
+    "inf_count": 0
+  },
+  {
+    "id": 105,
+    "MUID": "fr8_1_hashtagRecent_6_a981b121",
+    "seed_node": "fr8",
+    "mining_depth": 1,
+    "mining_type": "hashtagRecent",
+    "hashtag_media_amount": 6,
+    "created_at": "2024-04-08 06:00:00",
+    "p_count": 29,
+    "h_count": 6,
+    "u_count": 0,
+    "inf_count": 0
+  },
+  {
+    "id": 104,
+    "MUID": "fr8_1_hashtagRecent_6_769db6a5",
+    "seed_node": "fr8",
+    "mining_depth": 1,
+    "mining_type": "hashtagRecent",
+    "hashtag_media_amount": 6,
+    "created_at": "2024-04-08 06:00:00",
+    "p_count": 6,
+    "h_count": 1,
+    "u_count": 0,
+    "inf_count": 0
+  },
+  {
+    "id": 103,
+    "MUID": "freightgraffiti_0_hashtagRecent_30_be661c3d",
+    "seed_node": "freightgraffiti",
+    "mining_depth": 0,
+    "mining_type": "hashtagRecent",
+    "hashtag_media_amount": 30,
+    "created_at": "2024-04-08 06:00:00",
+    "p_count": 32,
+    "h_count": 1,
     "u_count": 0,
     "inf_count": 0
   }

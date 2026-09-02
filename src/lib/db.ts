@@ -1,8 +1,6 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
-import http from 'http';
-import https from 'https';
 import { getCachedData } from '@/lib/cache';
 
 const dbPath = path.join(process.cwd(), 'public', 'data', 'app_data.db');
@@ -28,6 +26,15 @@ export function getStaticTasks() {
 }
 
 export function getTasksServerPayload() {
+  // 1. Try static JSON first (100% Vercel compatible, 0% SQLite dependency)
+  if (fs.existsSync(tasksJsonPath)) {
+    try {
+      const tasks = getStaticTasks();
+      if (tasks && tasks.length > 0) return tasks;
+    } catch (e) {}
+  }
+
+  // 2. Fallback to SQLite query if JSON not present
   if (isDbAvailable()) {
     try {
       const db = getDb();
@@ -58,6 +65,7 @@ export function getTasksServerPayload() {
       if (tasks && tasks.length > 0) return tasks;
     } catch (e) {}
   }
+
   return getStaticTasks();
 }
 
@@ -127,69 +135,25 @@ export function getGraphFallbackData(muid: string) {
   }
 }
 
-function checkUrlHttp(url: string, timeoutMs = 800): Promise<boolean> {
-  return new Promise((resolve) => {
-    try {
-      const client = url.startsWith('https') ? https : http;
-      const req = client.request(url, { method: 'HEAD', timeout: timeoutMs }, (res) => {
-        resolve(res.statusCode === 200);
-      });
-      req.on('error', () => resolve(false));
-      req.on('timeout', () => {
-        req.destroy();
-        resolve(false);
-      });
-      req.end();
-    } catch {
-      resolve(false);
-    }
-  });
-}
-
-async function resolvePostImageUrl(post: any, seedNode?: string, muid?: string): Promise<string | null> {
-  if (!post) return null;
-  const postMediaId = post.m_id || post.pk;
-
-  let realUser = post.user_id;
-  if (post.media && post.media.includes('_')) {
-    realUser = post.media.substring(0, post.media.lastIndexOf('_'));
-  }
-  const mediaName = post.media || (realUser && post.pk ? `${realUser}_${post.pk}` : null);
-
-  const candidateSubpaths: string[] = [];
-
-  if (muid && postMediaId) {
-    candidateSubpaths.push(`media/exported_images/${muid}/${postMediaId}_exported.jpg`);
-    candidateSubpaths.push(`media/exported_images/${muid}/${postMediaId}_exported.webp`);
-  }
-  if (seedNode && post.user_id && post.pk) {
-    candidateSubpaths.push(`media/${seedNode}/${post.user_id}_${post.pk}.jpg`);
-    candidateSubpaths.push(`media/${seedNode}/${post.user_id}_${post.pk}.webp`);
-  }
-  if (realUser && post.pk) {
-    candidateSubpaths.push(`media/${realUser}/${realUser}_${post.pk}.jpg`);
-    candidateSubpaths.push(`media/${realUser}/${realUser}_${post.pk}.webp`);
-  }
-  if (seedNode && mediaName) {
-    candidateSubpaths.push(`media/${seedNode}/${mediaName}.jpg`);
-    candidateSubpaths.push(`media/${seedNode}/${mediaName}.webp`);
-  }
-
-  const uniqueSubpaths = Array.from(new Set(candidateSubpaths));
-
-  for (const subpath of uniqueSubpaths) {
-    const httpUrl = `http://data.abundis.com.mx/${subpath}`;
-    if (await checkUrlHttp(httpUrl)) return httpUrl;
-
-    const httpsUrl = `https://data.abundis.com.mx/${subpath}`;
-    if (await checkUrlHttp(httpsUrl)) return httpsUrl;
-  }
-
-  return null;
-}
-
 export async function getTaskDetailServerPayload(idParam: string) {
-  return getCachedData(['task_detail_verified_payload_v9', idParam], async () => {
+  return getCachedData(['task_detail_json_payload_v11', idParam], async () => {
+    // 1. Try static JSON payload first (100% Vercel compatible, 0% SQLite dependency)
+    try {
+      const jsonTasksDir = path.join(process.cwd(), 'public', 'json', 'tasks');
+      if (fs.existsSync(jsonTasksDir)) {
+        const files = fs.readdirSync(jsonTasksDir);
+        const match = files.find(
+          (f) => f.replace('.json', '') === idParam || f.includes(idParam)
+        );
+        if (match) {
+          const filePath = path.join(jsonTasksDir, match);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          return JSON.parse(content);
+        }
+      }
+    } catch (err) {}
+
+    // 2. Fallback to SQLite if static JSON not found
     let rawPayload: any = null;
 
     if (isDbAvailable()) {
@@ -201,6 +165,12 @@ export async function getTaskDetailServerPayload(idParam: string) {
 
         if (task) {
           const muid = task.MUID;
+          const targetJsonFile = path.join(process.cwd(), 'public', 'json', 'tasks', `${muid}.json`);
+          if (fs.existsSync(targetJsonFile)) {
+            db.close();
+            return JSON.parse(fs.readFileSync(targetJsonFile, 'utf-8'));
+          }
+
           const postsCountRow: any = db
             .prepare('SELECT COUNT(*) as total FROM data_media WHERE MUID = ?')
             .get(muid);
@@ -260,22 +230,6 @@ export async function getTaskDetailServerPayload(idParam: string) {
       };
     }
 
-    if (!rawPayload || !rawPayload.posts) return rawPayload;
-
-    // Fast parallel HTTP 200 HEAD pre-checking in Node.js
-    const resolvedPosts = await Promise.all(
-      rawPayload.posts.map(async (p: any) => {
-        const resolved_image_url = await resolvePostImageUrl(p, rawPayload.task.seed_node, rawPayload.task.MUID);
-        return {
-          ...p,
-          resolved_image_url,
-        };
-      })
-    );
-
-    return {
-      ...rawPayload,
-      posts: resolvedPosts,
-    };
+    return rawPayload;
   });
 }
