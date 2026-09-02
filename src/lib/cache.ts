@@ -7,6 +7,7 @@ const RAM_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours TTL for read-only stat
 
 /**
  * Retrieves cached data using dual-layer cache (RAM Memory Cache -> Next.js Data Cache -> SQLite Fetcher)
+ * Handles oversized payloads (> 2MB) gracefully by falling back to direct fetch + RAM cache.
  */
 export async function getCachedData<T>(
   keyParts: string[],
@@ -22,23 +23,32 @@ export async function getCachedData<T>(
     return memoryCached.data as T;
   }
 
-  // Layer 2: Next.js unstable_cache
-  const cachedFetcher = unstable_cache(
-    async () => {
-      logger.log('CACHE:MISS_DB', `Executing SQLite query for ${cacheKey}`);
-      const data = await fetcher();
-      return data;
-    },
-    keyParts,
-    { revalidate: 86400, tags }
-  );
+  // Layer 2: Try Next.js unstable_cache, fallback gracefully if payload > 2MB
+  try {
+    const cachedFetcher = unstable_cache(
+      async () => {
+        logger.log('CACHE:MISS_DB', `Executing SQLite query for ${cacheKey}`);
+        const data = await fetcher();
+        return data;
+      },
+      keyParts,
+      { revalidate: 86400, tags }
+    );
 
-  const result = await cachedFetcher();
-  memoryCache.set(cacheKey, { data: result, timestamp: Date.now() });
-  return result;
+    const result = await cachedFetcher();
+    memoryCache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  } catch (err: any) {
+    logger.log(
+      'CACHE:OVERSIZE_FALLBACK',
+      `Bypassing Next.js data cache for ${cacheKey}: ${err?.message || err}. Serving via direct fetch + RAM cache.`
+    );
+    const directResult = await fetcher();
+    memoryCache.set(cacheKey, { data: directResult, timestamp: Date.now() });
+    return directResult;
+  }
 }
 
 export function clearMemoryCache() {
   memoryCache.clear();
 }
-
