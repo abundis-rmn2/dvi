@@ -1,31 +1,44 @@
-'use client';
-
 import React from 'react';
-import { Navbar, Container, Nav } from 'react-bootstrap';
 import Link from 'next/link';
 
 export const Navigation: React.FC = () => {
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="mb-4 shadow-sm">
-      <Container>
-        <Navbar.Brand as={Link} href="/" className="fw-bold d-flex align-items-center gap-2">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow-sm">
+      <div className="container">
+        <Link href="/" className="navbar-brand fw-bold d-flex align-items-center gap-2">
           <span>DVI — Freight Graffiti Research</span>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="main-navbar-nav" />
-        <Navbar.Collapse id="main-navbar-nav">
-          <Nav className="ms-auto">
-            <Nav.Link as={Link} href="/">
-              🏠 Home (Intro)
-            </Nav.Link>
-            <Nav.Link as={Link} href="/methodology">
-              📘 Methodology Paper
-            </Nav.Link>
-            <Nav.Link as={Link} href="/hashtags">
-              📊 Data Mining Tasks & Hashtags (/hashtags)
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        </Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#main-navbar-nav"
+          aria-controls="main-navbar-nav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="main-navbar-nav">
+          <ul className="navbar-nav ms-auto">
+            <li className="nav-item">
+              <Link href="/" className="nav-link">
+                🏠 Home (Intro)
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link href="/methodology" className="nav-link">
+                📘 Methodology Paper
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link href="/hashtags" className="nav-link">
+                📊 Data Mining Tasks &amp; Hashtags (/hashtags)
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
   );
 };

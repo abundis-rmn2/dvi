@@ -36,27 +36,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const tasks = getStaticTasks();
     tasks.forEach((task: any) => {
       if (task?.MUID) {
+        // Core Task details entity page
         taskRoutes.push({
           url: `${SITE_URL}/tasks/${task.MUID}`,
           lastModified: task.created_at ? new Date(task.created_at) : new Date(),
           changeFrequency: 'monthly',
+          priority: 0.8,
+        });
+
+        // AI Graph visualizer entity page
+        taskRoutes.push({
+          url: `${SITE_URL}/graph/${task.MUID}`,
+          lastModified: task.created_at ? new Date(task.created_at) : new Date(),
+          changeFrequency: 'monthly',
           priority: 0.7,
         });
-        if (task.mining_type?.includes('user')) {
-          taskRoutes.push({
-            url: `${SITE_URL}/sigma/${task.MUID}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.6,
-          });
-        } else {
-          taskRoutes.push({
-            url: `${SITE_URL}/graph/${task.MUID}`,
-            lastModified: new Date(),
-            changeFrequency: 'monthly',
-            priority: 0.6,
-          });
-        }
       }
     });
   } catch (err) {

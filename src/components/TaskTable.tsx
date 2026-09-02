@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Table, Badge, Button } from 'react-bootstrap';
 import Link from 'next/link';
 
 export interface TaskItem {
@@ -68,8 +67,8 @@ export const TaskTable: React.FC<TaskTableProps> = ({
 
   return (
     <div className="table-responsive shadow-sm rounded" style={{ maxHeight: '800px', overflowY: 'auto' }}>
-      <Table striped bordered hover size="sm" className="align-middle mb-0">
-        <thead className="table-light">
+      <table className="table table-striped table-bordered table-hover align-middle mb-0 font-monospace small">
+        <thead className="table-dark">
           <tr>
             <th onClick={() => onSortChange('MUID')} style={{ cursor: 'pointer' }}>
               MUID {renderSortIcon('MUID')}
@@ -106,30 +105,31 @@ export const TaskTable: React.FC<TaskTableProps> = ({
                 <td>{task.mining_depth}</td>
                 <td>{task.hashtag_media_amount}</td>
                 <td>
-                  <Badge pill bg={pCount > 0 ? 'info' : 'danger'}>
+                  <span className={`badge rounded-pill ${pCount > 0 ? 'bg-info text-dark' : 'bg-danger'}`}>
                     {pCount}
-                  </Badge>
+                  </span>
                 </td>
                 <td>
-                  <Badge pill bg={hCount > 0 ? 'success' : 'danger'}>
+                  <span className={`badge rounded-pill ${hCount > 0 ? 'bg-success' : 'bg-danger'}`}>
                     {hCount}
-                  </Badge>
+                  </span>
                 </td>
                 <td>
                   <small>{new Date(task.created_at).toLocaleString()}</small>
                 </td>
                 <td className="text-center">
-                  <Link href={`/sigma/${task.MUID}`} className="btn btn-secondary btn-sm me-1">
-                    ✏️
-                  </Link>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    disabled={deletingId === task.id}
-                    onClick={() => handleDelete(task.id)}
-                  >
-                    🗑️
-                  </Button>
+                  <div className="btn-group btn-group-sm">
+                    <Link href={`/tasks/${task.MUID}`} className="btn btn-outline-primary">
+                      📋
+                    </Link>
+                    <button
+                      className="btn btn-outline-danger"
+                      disabled={deletingId === task.id}
+                      onClick={() => handleDelete(task.id)}
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </td>
               </tr>
             );
@@ -142,7 +142,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({
             </tr>
           )}
         </tbody>
-      </Table>
+      </table>
     </div>
   );
 };

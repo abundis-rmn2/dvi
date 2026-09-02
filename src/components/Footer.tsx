@@ -1,7 +1,4 @@
-'use client';
-
 import React from 'react';
-import { Container, Row, Col, Badge } from 'react-bootstrap';
 
 export function Footer() {
   const thesisUrl =
@@ -9,13 +6,13 @@ export function Footer() {
 
   return (
     <footer className="bg-dark text-light border-top border-secondary pt-5 pb-4 mt-5">
-      <Container>
-        <Row className="gy-4 mb-4">
-          <Col lg={7}>
+      <div className="container">
+        <div className="row gy-4 mb-4">
+          <div className="col-lg-7">
             <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
-              <Badge bg="primary" className="px-2 py-1">🎓 Research Project</Badge>
-              <Badge bg="outline-light" className="border text-light px-2 py-1">Universidad de Guadalajara</Badge>
-              <Badge bg="info" className="px-2 py-1 text-dark">Master in Communication Studies, 2024</Badge>
+              <span className="badge bg-primary px-2 py-1">🎓 Research Project</span>
+              <span className="badge bg-outline-light border text-light px-2 py-1">Universidad de Guadalajara</span>
+              <span className="badge bg-info px-2 py-1 text-dark">Master in Communication Studies, 2024</span>
             </div>
 
             <h5 className="fw-bold text-white mb-2">
@@ -35,19 +32,19 @@ export function Footer() {
             </p>
 
             <div className="d-flex flex-wrap gap-2 mb-3">
-              <Badge bg="secondary">🔍 Researcher</Badge>
-              <Badge bg="secondary">🌐 Ethnography</Badge>
+              <span className="badge bg-secondary">🔍 Researcher</span>
+              <span className="badge bg-secondary">🌐 Ethnography</span>
               <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
-                <Badge bg="secondary" className="hover-opacity">🐍 idmb Mining Bot 🔗</Badge>
+                <span className="badge bg-secondary hover-opacity">🐍 idmb Mining Bot 🔗</span>
               </a>
               <a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
-                <Badge bg="secondary" className="hover-opacity">👁️ ML Vision (ResNet) 🔗</Badge>
+                <span className="badge bg-secondary hover-opacity">👁️ ML Vision (ResNet) 🔗</span>
               </a>
               <a href="https://github.com/abundis-rmn2/Hashtag_Custom_NER_spaCy" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
-                <Badge bg="secondary" className="hover-opacity">🔤 spaCy Custom NER 🔗</Badge>
+                <span className="badge bg-secondary hover-opacity">🔤 spaCy Custom NER 🔗</span>
               </a>
               <a href="https://github.com/abundis-rmn2/dvi" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">
-                <Badge bg="secondary" className="hover-opacity">⚛️ DVI Web Interface 🔗</Badge>
+                <span className="badge bg-secondary hover-opacity">⚛️ DVI Web Interface 🔗</span>
               </a>
             </div>
 
@@ -58,9 +55,9 @@ export function Footer() {
             <p className="text-white-50 small mb-0" style={{ lineHeight: '1.6' }}>
               Methodologically, field and digital ethnography were combined with automated Instagram hashtag data mining through the development of the <a href="https://github.com/abundis-rmn2/idmb" target="_blank" rel="noopener noreferrer" className="text-info font-monospace text-decoration-none fw-bold">idmb bot 🔗</a>. Hypertextual interaction metadata was modeled in complex network graphs using ForceAtlas layouts with SigmaJS and Graphology to analyze style propagation and recognition flows. Additionally, a CNN classifier (<a href="https://github.com/abundis-rmn2/Graffiti_Detection_OD_TensorFlow" target="_blank" rel="noopener noreferrer" className="text-info text-decoration-none fw-bold">ResNet 🔗</a>) was trained to recognize graffiti styles (monikers, tags, throw-ups). The conceptual framework integrated Jenkins&apos; participatory culture and Thompson&apos;s social mediation theories.
             </p>
-          </Col>
+          </div>
 
-          <Col lg={5}>
+          <div className="col-lg-5">
             <div className="bg-black bg-opacity-50 p-3 rounded border border-secondary h-100 d-flex flex-column justify-content-between">
               <div>
                 <h6 className="text-uppercase text-muted fw-bold mb-2 font-monospace" style={{ letterSpacing: '1px', fontSize: '0.75rem' }}>
@@ -82,18 +79,18 @@ export function Footer() {
                 </a>
               </div>
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
 
         <hr className="border-secondary my-3" />
 
-        <Row className="align-items-center">
-          <Col md={6} className="text-center text-md-start mb-2 mb-md-0">
+        <div className="row align-items-center">
+          <div className="col-md-6 text-center text-md-start mb-2 mb-md-0">
             <small className="text-white-50">
               &copy; {new Date().getFullYear()} DVI - Data Visualization Interface | Developed by Javier Abundis
             </small>
-          </Col>
-          <Col md={6} className="text-center text-md-end">
+          </div>
+          <div className="col-md-6 text-center text-md-end">
             <a
               href="https://www.abundis.com.mx"
               target="_blank"
@@ -102,9 +99,9 @@ export function Footer() {
             >
               abundis.com.mx
             </a>
-          </Col>
-        </Row>
-      </Container>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }

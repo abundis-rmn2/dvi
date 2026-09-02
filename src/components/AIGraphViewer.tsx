@@ -1198,11 +1198,11 @@ export const AIGraphViewer: React.FC<AIGraphViewerProps> = ({ muid }) => {
                                 '/img_not_inf.svg'
                               ].filter(Boolean) as string[];
                               const nextStep = step + 1;
-                              if (nextStep < candidates.length) {
+                              if (nextStep < candidates.length && candidates[nextStep] !== '/img_not_inf.svg') {
                                 target.dataset.step = String(nextStep);
                                 target.src = candidates[nextStep];
                               } else {
-                                target.src = '/img_not_inf.svg';
+                                target.style.display = 'none';
                               }
                             }}
                           />

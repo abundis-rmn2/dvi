@@ -61,7 +61,7 @@ export async function GET(
             .all(muid);
 
           const rawPosts = db
-            .prepare(`SELECT * FROM data_media WHERE MUID = ? ORDER BY ${safePSort} ${pOrder} LIMIT 200`)
+            .prepare(`SELECT * FROM data_media WHERE MUID = ? ORDER BY ${safePSort} ${pOrder}`)
             .all(muid);
 
           db.close();

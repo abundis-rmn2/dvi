@@ -1,8 +1,31 @@
-'use client';
-
 import React from 'react';
-import { Container, Row, Col, Card, Badge, Button } from 'react-bootstrap';
+import { Metadata } from 'next';
 import Link from 'next/link';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://freight-graffiti.abundis.com.mx';
+
+export const metadata: Metadata = {
+  title: 'Freight Train Graffiti Network Visualization & Multimodal AI Research',
+  description:
+    'Mining, shaping, visualizing, and interpreting Instagram hypertextual networks of freight train graffiti communalities in North America using Machine Learning (TensorFlow, spaCy) and Graphology.',
+  alternates: {
+    canonical: `${SITE_URL}/`,
+  },
+  openGraph: {
+    title: 'Freight Train Graffiti Network Visualization & Multimodal AI Research',
+    description:
+      'Mining, shaping, visualizing, and interpreting Instagram hypertextual networks of freight train graffiti communalities in North America using machine learning and graphology.',
+    url: `${SITE_URL}/`,
+    type: 'website',
+    siteName: 'Freight Graffiti DVI',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Freight Train Graffiti Network Visualization & Multimodal AI Research',
+    description:
+      'Mining, shaping, visualizing, and interpreting Instagram hypertextual networks of freight train graffiti communalities in North America.',
+  },
+};
 
 export default function HomeIndexPage() {
   const paperUrl =
@@ -11,19 +34,19 @@ export default function HomeIndexPage() {
     'https://www.abundis.com.mx/en/thesis/visualization-of-a-hypertextual-interaction-field-in-the-form-of-a-network-graph-using-computational-processes-case-study-graffiti-on-freight-trains-in-north-america';
 
   return (
-    <Container className="py-3">
+    <div className="container py-3">
       {/* Hero Header */}
       <section className="bg-dark text-white p-4 p-md-5 rounded-4 shadow mb-5 border border-secondary relative overflow-hidden">
         <div className="d-flex flex-wrap gap-2 mb-3">
-          <Badge bg="primary" className="px-3 py-2 fs-6 fw-normal">
+          <span className="badge bg-primary px-3 py-2 fs-6 fw-normal">
             🔬 Master&apos;s Research Project
-          </Badge>
-          <Badge bg="info" text="dark" className="px-3 py-2 fs-6 fw-normal">
+          </span>
+          <span className="badge bg-info text-dark px-3 py-2 fs-6 fw-normal">
             CADS — Universidad de Guadalajara
-          </Badge>
-          <Badge bg="warning" text="dark" className="px-3 py-2 fs-6 fw-normal">
+          </span>
+          <span className="badge bg-warning text-dark px-3 py-2 fs-6 fw-normal">
             Machine Learning + Network Graphing
-          </Badge>
+          </span>
         </div>
 
         <h1 className="display-5 fw-bold mb-3 text-white" style={{ lineHeight: '1.2' }}>
@@ -52,12 +75,12 @@ export default function HomeIndexPage() {
       </section>
 
       {/* Main Index Content */}
-      <Row className="gy-4">
+      <div className="row gy-4">
         {/* Main Column */}
-        <Col lg={8}>
+        <div className="col-lg-8">
           {/* Epigraph Card */}
-          <Card className="border-0 shadow-sm bg-light mb-4 border-start border-primary border-4">
-            <Card.Body className="p-4">
+          <div className="card border-0 shadow-sm bg-light mb-4 border-start border-primary border-4">
+            <div className="card-body p-4">
               <blockquote className="blockquote mb-0">
                 <p className="fs-5 italic text-dark mb-2">
                   &ldquo;Man is an animal suspended in webs of significance he himself has spun.&rdquo;
@@ -66,8 +89,8 @@ export default function HomeIndexPage() {
                   Clifford Geertz
                 </footer>
               </blockquote>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Section: Introduction */}
           <article className="prose mb-5">
@@ -81,28 +104,28 @@ export default function HomeIndexPage() {
             </p>
 
             {/* Actor Roles Grid */}
-            <Row className="g-3 my-3">
-              <Col md={6}>
-                <Card className="h-100 border-primary bg-primary bg-opacity-10 shadow-sm">
-                  <Card.Body>
+            <div className="row g-3 my-3">
+              <div className="col-md-6">
+                <div className="card h-100 border-primary bg-primary bg-opacity-10 shadow-sm">
+                  <div className="card-body">
                     <h5 className="fw-bold text-primary mb-2">🎨 Freight Graffiti Writers</h5>
                     <p className="small text-dark mb-0">
                       Mark freight cars to broadcast their signatures across a transnational network of writers, using mobile steel as medium.
                     </p>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col md={6}>
-                <Card className="h-100 border-info bg-info bg-opacity-10 shadow-sm">
-                  <Card.Body>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="card h-100 border-info bg-info bg-opacity-10 shadow-sm">
+                  <div className="card-body">
                     <h5 className="fw-bold text-info mb-2 text-dark">📷 Freight Graffiti Benchers</h5>
                     <p className="small text-dark mb-0">
                       Spotters and photographers who document freight cars at train yards, uploading photos to Instagram enriched with location, date, and rail metadata.
                     </p>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <p className="fs-5 text-secondary" style={{ lineHeight: '1.8' }}>
               Despite its rich sociocultural significance, empirical analysis of large-scale freight graffiti poses a severe methodological challenge due to the volume, ephemerality, and multimodal nature of the data. Traditional qualitative methods in the social sciences fall short when attempting to map thousands of social media posts, visual style variations, and domain-specific slang simultaneously.
@@ -122,11 +145,11 @@ export default function HomeIndexPage() {
               To address these methodological constraints, this research introduces an interdisciplinary framework integrating <strong>Multimodal Machine Learning Classification Models</strong> directly into dynamic <strong>Network Graphing</strong>:
             </p>
 
-            {/* /listing Component Cards */}
+            {/* Listing Cards */}
             <div className="d-flex flex-column gap-3">
               {/* Item 1 */}
-              <Card className="shadow-sm border-0 border-start border-4 border-primary hover-shadow transition-all">
-                <Card.Body className="p-4">
+              <div className="card shadow-sm border-0 border-start border-4 border-primary hover-shadow transition-all">
+                <div className="card-body p-4">
                   <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <span className="badge bg-primary px-3 py-2 font-monospace">01 / DATA MINING</span>
                     <div className="d-flex gap-2 align-items-center">
@@ -144,20 +167,20 @@ export default function HomeIndexPage() {
                   </p>
                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div className="d-flex gap-2 flex-wrap">
-                      <Badge bg="light" text="dark" className="border">Posts Data</Badge>
-                      <Badge bg="light" text="dark" className="border">Hashtags Depth</Badge>
-                      <Badge bg="light" text="dark" className="border">SQL Storage</Badge>
+                      <span className="badge bg-light text-dark border">Posts Data</span>
+                      <span className="badge bg-light text-dark border">Hashtags Depth</span>
+                      <span className="badge bg-light text-dark border">SQL Storage</span>
                     </div>
                     <a href="https://www.abundis.com.mx/en/thesis/visualization-of-a-hypertextual-interaction-field-in-the-form-of-a-network-graph-using-computational-processes-case-study-graffiti-on-freight-trains-in-north-america" target="_blank" rel="noopener noreferrer" className="btn btn-link text-primary text-decoration-none p-0 small fw-bold">
                       🌐 Read Project at abundis.com.mx 🔗
                     </a>
                   </div>
-                </Card.Body>
-              </Card>
+                </div>
+              </div>
 
               {/* Item 2 */}
-              <Card className="shadow-sm border-0 border-start border-4 border-success hover-shadow transition-all">
-                <Card.Body className="p-4">
+              <div className="card shadow-sm border-0 border-start border-4 border-success hover-shadow transition-all">
+                <div className="card-body p-4">
                   <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <span className="badge bg-success px-3 py-2 font-monospace">02 / IMAGE_AI</span>
                     <div className="d-flex gap-2 align-items-center">
@@ -175,20 +198,20 @@ export default function HomeIndexPage() {
                   </p>
                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div className="d-flex gap-2 flex-wrap">
-                      <Badge bg="light" text="dark" className="border">Wildstyle (0.94 score)</Badge>
-                      <Badge bg="light" text="dark" className="border">S_Tren (0.95 score)</Badge>
-                      <Badge bg="light" text="dark" className="border">Moniker &amp; Bomba</Badge>
+                      <span className="badge bg-light text-dark border">Wildstyle (0.94 score)</span>
+                      <span className="badge bg-light text-dark border">S_Tren (0.95 score)</span>
+                      <span className="badge bg-light text-dark border">Moniker &amp; Bomba</span>
                     </div>
                     <a href="https://www.abundis.com.mx" target="_blank" rel="noopener noreferrer" className="btn btn-link text-success text-decoration-none p-0 small fw-bold">
                       🌐 AI Models at abundis.com.mx 🔗
                     </a>
                   </div>
-                </Card.Body>
-              </Card>
+                </div>
+              </div>
 
               {/* Item 3 */}
-              <Card className="shadow-sm border-0 border-start border-4 border-warning hover-shadow transition-all">
-                <Card.Body className="p-4">
+              <div className="card shadow-sm border-0 border-start border-4 border-warning hover-shadow transition-all">
+                <div className="card-body p-4">
                   <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <span className="badge bg-warning text-dark px-3 py-2 font-monospace">03 / TEXT_AI</span>
                     <div className="d-flex gap-2 align-items-center">
@@ -206,25 +229,25 @@ export default function HomeIndexPage() {
                   </p>
                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div className="d-flex gap-2 flex-wrap">
-                      <Badge bg="light" text="dark" className="border">Rail Lingo</Badge>
-                      <Badge bg="light" text="dark" className="border">City Toponyms</Badge>
-                      <Badge bg="light" text="dark" className="border">OOV Writer Tags</Badge>
+                      <span className="badge bg-light text-dark border">Rail Lingo</span>
+                      <span className="badge bg-light text-dark border">City Toponyms</span>
+                      <span className="badge bg-light text-dark border">OOV Writer Tags</span>
                     </div>
                     <a href="https://doi.org/10.48619/gsa.v2i1.837" target="_blank" rel="noopener noreferrer" className="btn btn-link text-dark text-decoration-none p-0 small fw-bold">
                       📄 Published Paper (DOI) 🔗
                     </a>
                   </div>
-                </Card.Body>
-              </Card>
+                </div>
+              </div>
             </div>
           </section>
-        </Col>
+        </div>
 
         {/* Sidebar Column */}
-        <Col lg={4}>
+        <div className="col-lg-4">
           {/* Methodology Paper Card */}
-          <Card className="shadow-sm border-0 mb-4 bg-primary text-white">
-            <Card.Body className="p-4">
+          <div className="card shadow-sm border-0 mb-4 bg-primary text-white">
+            <div className="card-body p-4">
               <span className="badge bg-white text-primary fw-bold mb-2">UXUC Journal Paper</span>
               <h5 className="fw-bold text-white mb-2">Mining, Shaping, Visualizing, and Interpreting Instagram Hypertextual Networks</h5>
               <p className="small text-white-50 mb-3">
@@ -233,12 +256,12 @@ export default function HomeIndexPage() {
               <Link href={paperUrl} className="btn btn-light btn-lg w-100 fw-bold">
                 📖 Read Paper in /methodology
               </Link>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Quick Dashboard Action Card */}
-          <Card className="shadow-sm border-primary mb-4 bg-dark text-white">
-            <Card.Body className="p-4 text-center">
+          <div className="card shadow-sm border-primary mb-4 bg-dark text-white">
+            <div className="card-body p-4 text-center">
               <h5 className="fw-bold text-info mb-3">📊 Data Dashboard</h5>
               <p className="small text-light opacity-90 mb-4">
                 Access the complete dataset of mined tasks, MUIDs, network graphs, and inference counts.
@@ -246,15 +269,15 @@ export default function HomeIndexPage() {
               <Link href="/hashtags" className="btn btn-info btn-lg w-100 fw-bold py-2">
                 Open /hashtags Dashboard
               </Link>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* Triad of Self Concept Card */}
-          <Card className="shadow-sm mb-4 border-0 bg-light">
-            <Card.Header className="bg-secondary text-white fw-bold">
+          <div className="card shadow-sm mb-4 border-0 bg-light">
+            <div className="card-header bg-secondary text-white fw-bold">
               🔺 Triad of Self-Announcement
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="card-body">
               <p className="small text-muted mb-3">
                 Figueroa (2014) signature graffiti framework applied to railroad culture:
               </p>
@@ -269,15 +292,15 @@ export default function HomeIndexPage() {
                   <strong className="text-warning text-dark">I AM</strong> → Entities (Writers/Crews)
                 </li>
               </ul>
-            </Card.Body>
-          </Card>
+            </div>
+          </div>
 
           {/* External Links & Open Source Repos */}
-          <Card className="shadow-sm border-0">
-            <Card.Header className="bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+          <div className="card shadow-sm border-0">
+            <div className="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
               <span>🌐 Publications &amp; Open Source Repos</span>
-            </Card.Header>
-            <Card.Body className="d-flex flex-column gap-2">
+            </div>
+            <div className="card-body d-flex flex-column gap-2">
               <a href={externalThesisUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark text-start btn-sm fw-bold">
                 🎓 Master&apos;s Thesis at abundis.com.mx 🔗
               </a>
@@ -298,10 +321,10 @@ export default function HomeIndexPage() {
               <a href="https://github.com/abundis-rmn2/Hashtag_Custom_NER_spaCy" target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-secondary text-start font-monospace">
                 🔤 spaCy Custom NER Model 🔗
               </a>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
