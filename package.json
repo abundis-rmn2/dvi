@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "export-json": "node scripts/export-json.js",
+    "warm-cache": "node scripts/warm-cache.js",
     "postinstall": "prisma generate"
   },
   "dependencies": {
