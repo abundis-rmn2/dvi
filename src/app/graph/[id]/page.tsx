@@ -2,8 +2,16 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
-import { getTaskDetailServerPayload } from '@/lib/db';
+import { getTaskDetailServerPayload, getStaticTasks } from '@/lib/db';
 import { AIGraphPageClient } from '@/components/AIGraphPageClient';
+import { extractTopEntities } from '@/lib/nlp-parser';
+
+export async function generateStaticParams() {
+  const tasks = getStaticTasks();
+  return tasks.map((task: any) => ({
+    id: task.MUID,
+  }));
+}
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://freight-graffiti.abundis.com.mx';
 
@@ -19,9 +27,12 @@ export async function generateMetadata({
     };
   }
 
-  const { task, stats } = payload;
+  const { task, stats, posts } = payload;
+  const { writers, crews } = extractTopEntities(posts || [], 3);
+  const entitiesList = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
+
   const pageTitle = `AI Network Graph Analysis: ${task.seed_node} (${task.MUID})`;
-  const pageDescription = `Interactive multimodal AI network graph analysis for seed node ${task.seed_node}. Visualizing hypertextual relationships, user communalities, and graphology of freight train graffiti. (${stats.posts} posts, ${stats.hashtags} hashtags).`;
+  const pageDescription = `Interactive multimodal AI network graph analysis for seed node ${task.seed_node}. Top detected graffiti entities: ${entitiesList || 'None'}. Dataset contains ${stats.posts} posts.`;
   const canonicalUrl = `${SITE_URL}/graph/${task.MUID}`;
 
   return {
@@ -76,10 +87,38 @@ export default async function AIGraphPage({
     );
   }
 
-  const { task, stats } = payload;
+  const { task, stats, posts } = payload;
+
+  const { writers, crews } = extractTopEntities(posts, 5);
+  const entitiesData = [
+    ...writers.map(w => ({
+      '@type': 'Person',
+      name: w.term,
+      disambiguatingDescription: 'Freight train graffiti writer in North America'
+    })),
+    ...crews.map(c => ({
+      '@type': 'Organization',
+      name: c.term,
+      disambiguatingDescription: 'Graffiti Crew'
+    }))
+  ];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `Freight Graffiti Network: ${task.seed_node}`,
+    description: `Interactive visual network graph for ${task.seed_node}.`,
+    about: entitiesData
+  };
+
+  const entitiesListStr = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navigation />
       <div className="container py-4">
         {/* Server-Rendered Header Section for Search Engines */}
@@ -101,6 +140,17 @@ export default async function AIGraphPage({
             </Link>
           </div>
         </div>
+
+        {entitiesListStr && (
+          <article className="mb-4 bg-white p-3 rounded shadow-sm border border-info">
+            <h5 className="text-info fw-bold mb-2">🤖 Semantic AI Context</h5>
+            <p className="mb-0 text-muted">
+              This interactive graph represents a semantic network analysis of freight train graffiti centered around the seed node <strong>{task.seed_node}</strong>. 
+              Our NER (Named Entity Recognition) pipeline has detected the following primary entities forming this sub-network cluster: <strong>{entitiesListStr}</strong>. 
+              This structured data disambiguates polysemic elements (e.g. Kosmetics) from actual graffiti writers and crews in North America.
+            </p>
+          </article>
+        )}
 
         {/* Server HTML Summary Card */}
         <div className="card mb-4 shadow-sm border-0 bg-light">

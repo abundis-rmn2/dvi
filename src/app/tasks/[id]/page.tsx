@@ -2,9 +2,17 @@ import React from 'react';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { Navigation } from '@/components/Navigation';
-import { getTaskDetailServerPayload } from '@/lib/db';
+import { getTaskDetailServerPayload, getStaticTasks } from '@/lib/db';
 import { TaskDetailClient } from '@/components/TaskDetailClient';
 import { formatHashtags } from '@/utils/hashtags';
+import { extractTopEntities } from '@/lib/nlp-parser';
+
+export async function generateStaticParams() {
+  const tasks = getStaticTasks();
+  return tasks.map((task: any) => ({
+    id: task.MUID,
+  }));
+}
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://freight-graffiti.abundis.com.mx';
 
@@ -20,9 +28,12 @@ export async function generateMetadata({
     };
   }
 
-  const { task, stats } = payload;
+  const { task, stats, posts } = payload;
+  const { writers, crews } = extractTopEntities(posts || [], 3);
+  const entitiesList = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
+
   const pageTitle = `${task.seed_node} (${task.MUID}) — Freight Graffiti Mining Task Data`;
-  const pageDescription = `Instagram data mining network analysis for seed node ${task.seed_node} (MUID: ${task.MUID}). Dataset contains ${stats.posts} posts, ${stats.hashtags} hashtags, ${stats.users} target users, and ${stats.inferences || 0} AI inferences.`;
+  const pageDescription = `Instagram data mining network analysis for seed node ${task.seed_node} (MUID: ${task.MUID}). Dataset contains ${stats.posts} posts. Top detected graffiti entities: ${entitiesList || 'None'}.`;
   const canonicalUrl = `${SITE_URL}/tasks/${task.MUID}`;
 
   return {
@@ -79,8 +90,36 @@ export default async function TaskDetailPage({
 
   const { task, stats, hashtags, posts } = payload;
 
+  const { writers, crews } = extractTopEntities(posts, 5);
+  const entitiesData = [
+    ...writers.map(w => ({
+      '@type': 'Person',
+      name: w.term,
+      disambiguatingDescription: 'Freight train graffiti writer in North America'
+    })),
+    ...crews.map(c => ({
+      '@type': 'Organization',
+      name: c.term,
+      disambiguatingDescription: 'Graffiti Crew'
+    }))
+  ];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    name: `Freight Graffiti Network: ${task.seed_node}`,
+    description: `Instagram data mining dataset focusing on the freight train graffiti community related to ${task.seed_node}.`,
+    about: entitiesData
+  };
+
+  const entitiesListStr = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navigation />
       <div className="container py-4">
         {/* Header Title Section - Pure HTML for Search Crawlers */}
@@ -100,6 +139,17 @@ export default async function TaskDetailPage({
             </Link>
           </div>
         </div>
+
+        {entitiesListStr && (
+          <article className="mb-4 bg-white p-3 rounded shadow-sm border border-info">
+            <h5 className="text-info fw-bold mb-2">🤖 Semantic AI Context</h5>
+            <p className="mb-0 text-muted">
+              This dataset represents a freight graffiti network analysis centered around the seed node <strong>{task.seed_node}</strong>. 
+              Utilizing Natural Language Processing, our algorithms have identified highly recurrent graffiti entities in this sub-network, 
+              including <strong>{entitiesListStr}</strong>. This graph discards irrelevant polysemic noise to focus strictly on North American railroad graffiti communalities.
+            </p>
+          </article>
+        )}
 
         {/* Server-Rendered Metrics Cards */}
         <div className="row mb-4 text-center">

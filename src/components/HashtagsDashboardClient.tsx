@@ -170,10 +170,10 @@ export function HashtagsDashboardClient({ initialTasks }: HashtagsDashboardClien
                   </td>
                   <td className="text-end">
                     <div className="btn-group btn-group-sm">
-                      <Link href={`/tasks/${task.MUID}`} className="btn btn-outline-primary fw-bold">
+                      <Link href={`/tasks/${task.MUID}`} className="btn btn-outline-primary fw-bold" prefetch={false}>
                         📋 Details
                       </Link>
-                      <Link href={`/graph/${task.MUID}`} className="btn btn-primary fw-bold">
+                      <Link href={`/graph/${task.MUID}`} className="btn btn-primary fw-bold" prefetch={false}>
                         🌐 AI Graph
                       </Link>
                     </div>

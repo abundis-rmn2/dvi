@@ -119,7 +119,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({
                 </td>
                 <td className="text-center">
                   <div className="btn-group btn-group-sm">
-                    <Link href={`/tasks/${task.MUID}`} className="btn btn-outline-primary">
+                    <Link href={`/tasks/${task.MUID}`} className="btn btn-outline-primary" prefetch={false}>
                       📋
                     </Link>
                     <button

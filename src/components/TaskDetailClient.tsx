@@ -221,6 +221,8 @@ export function TaskDetailClient({
                             alt={p.user_id || 'Post'}
                             className="w-100 h-100"
                             style={{ objectFit: 'cover' }}
+                            loading="lazy"
+                            decoding="async"
                             onError={(e) => handleImgError(e, p)}
                           />
                           {/* Hover overlay with Instagram style metrics */}
