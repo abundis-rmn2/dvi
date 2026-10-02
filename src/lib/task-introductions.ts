@@ -29,12 +29,12 @@ interface SeedProfile {
 
 const SEED_PROFILES: Record<string, SeedProfile> = {
   afeks: {
-    categoryLabel: 'Graffiti Writer (Rolling Stock)',
-    description: 'Afeks is an active writer within the North American freight train graffiti scene, recognized for distinctive metallic silver pieces and dynamic typography executed on rail rolling stock.',
+    categoryLabel: 'Top Freight Graffiti Writer',
+    description: 'Afeks is an active writer within the North American freight train graffiti scene, recognized for distinctive metallic silver pieces and dynamic typography executed on freight cars and boxcars.',
     context: 'Instagram network mining reveals frequent co-occurrence with regional writers and crews, tracing the inter-regional circulation of boxcars across major freight corridors.'
   },
   asoter: {
-    categoryLabel: 'Graffiti Writer (Rolling Stock)',
+    categoryLabel: 'Top Freight Graffiti Writer',
     description: 'Asoter is a prolific freight train writer frequently documented across boxcars and intermodal wagons along BNSF and Union Pacific transcontinental lines.',
     context: 'Network density analysis links this cluster with historic crews such as KOG and ODV, indicating sustained prominence in contemporary railroad art.'
   },
@@ -51,7 +51,7 @@ const SEED_PROFILES: Record<string, SeedProfile> = {
   benchmexicocity: {
     categoryLabel: 'Observation Hotspot (Mexico City Hub)',
     description: 'Focused on the vital rail corridors and classification facilities of the Valley of Mexico, including the Ferrovalle yards and Pantaco terminal.',
-    context: 'It maps the convergence of Mexican graffiti writers with international rolling stock arriving from the US border, showcasing cross-border artistic dissemination.'
+    context: 'It maps the convergence of Mexican graffiti writers with international freight trains and boxcars arriving from the US border, showcasing cross-border artistic dissemination.'
   },
   ferromex: {
     categoryLabel: 'Railroad Carrier Infrastructure',
@@ -60,7 +60,7 @@ const SEED_PROFILES: Record<string, SeedProfile> = {
   },
   ferromexgraffiti: {
     categoryLabel: 'Transnational Subculture',
-    description: 'Community dedicated specifically to tracking and documenting graffiti applied directly to Ferromex rolling stock.',
+    description: 'Community dedicated specifically to tracking and documenting graffiti applied directly to Ferromex freight cars and boxcars.',
     context: 'Highlights constant stylistic dialogue between Mexican and American writers as railcars cycle continuously across international ports of entry.'
   },
   fitness: {
@@ -104,28 +104,28 @@ const SEED_PROFILES: Record<string, SeedProfile> = {
     context: 'Provides an empirical baseline to quantify graph modularity and verify the clustering accuracy of identified writer communities.'
   },
   kosm: {
-    categoryLabel: 'Polysemy Case Study',
+    categoryLabel: 'Top Freight Graffiti Writer / Disambiguation',
     description: 'A benchmark study in semantic polysemy focused on the writer Kosm, whose moniker overlaps with commercial cosmetic products and spiritual content.',
     context: 'Named Entity Recognition (NER) cleanly filters external contextual noise to isolate authentic freight train graffiti interventions from homonymous clutter.'
   },
   mecro: {
-    categoryLabel: 'Iconic Writer (CDC / KSG)',
-    description: 'Mecro (CDC, KSG) is universally regarded as one of the most prolific and technically revered figures in modern freight train graffiti history.',
+    categoryLabel: 'Legend Freight Graffiti Writer (CDC / KSG)',
+    description: 'Mecro (CDC, KSG) is universally regarded as a living legend and one of the most prolific, technically revered figures in modern freight train graffiti history.',
     context: 'Renowned for razor-sharp mechanical bevels, flawless fades, and iconic monikers, his pieces navigate transcontinental routes across BNSF, CSX, and Union Pacific networks.'
   },
   nearaxs: {
-    categoryLabel: 'Graffiti Writer (Rolling Stock)',
-    description: 'Active North American freight graffiti writer recognized for consistent pieces on long-haul boxcars.',
+    categoryLabel: 'Top Freight Graffiti Writer',
+    description: 'Nearaxs is an active North American freight graffiti writer recognized for consistent pieces on long-haul boxcars.',
     context: 'Network co-occurrences demonstrate connectivity with midwestern freight crews and transcontinental rail artists.'
   },
   nogalesbench: {
     categoryLabel: 'Border Transit Hotspot',
     description: 'A strategic observation point at the Nogales international rail gateway (Sonora / Arizona), linking Ferromex and Union Pacific systems.',
-    context: 'Provides an indispensable vantage point for documenting the uninterrupted bilateral exchange of painted rolling stock between Mexico and the United States.'
+    context: 'Provides an indispensable vantage point for documenting the uninterrupted bilateral exchange of painted freight cars between Mexico and the United States.'
   },
   nogalesbenching: {
     categoryLabel: 'Border Observation Practice',
-    description: 'The active photographic tracking of rolling stock at the high-volume Nogales rail bottleneck.',
+    description: 'The active photographic tracking of freight train cars at the high-volume Nogales rail bottleneck.',
     context: 'Provides empirical insight into piece longevity, border customs inspection wear, and transcontinental transit times.'
   },
   portlandbench: {
@@ -134,7 +134,7 @@ const SEED_PROFILES: Record<string, SeedProfile> = {
     context: 'Captures the aesthetic signature of West Coast artists and the distinct atmospheric weathering of the PNW rail environment.'
   },
   sitrek: {
-    categoryLabel: 'Graffiti Writer (Rolling Stock)',
+    categoryLabel: 'Top Freight Graffiti Writer',
     description: 'Sitrek is a prominent contemporary writer in the freight graffiti circuit, widely recognized across boxcars, grain hoppers, and intermodal wells.',
     context: 'Cluster analysis highlights strong co-occurrence with crews operating across cross-border freight routes connecting Mexican and US rail networks.'
   }
@@ -159,7 +159,7 @@ export function generateTaskIntroduction(params: TaskIntroParams): GeneratedIntr
   
   const baseContext = profile
     ? profile.context
-    : `This dataset examines co-occurrence patterns between media posts, writers, and tags across North American freight rolling stock.`;
+    : `This dataset examines co-occurrence patterns between media posts, writers, and tags across North American freight trains and boxcars.`;
 
   // Construct entities sentence
   let entitiesSentence = '';
