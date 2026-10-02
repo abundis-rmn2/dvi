@@ -6,6 +6,7 @@ import { getTaskDetailServerPayload, getStaticTasks } from '@/lib/db';
 import { TaskDetailClient } from '@/components/TaskDetailClient';
 import { formatHashtags } from '@/utils/hashtags';
 import { extractTopEntities } from '@/lib/nlp-parser';
+import { generateTaskIntroduction } from '@/lib/task-introductions';
 
 export async function generateStaticParams() {
   const tasks = getStaticTasks();
@@ -30,10 +31,21 @@ export async function generateMetadata({
 
   const { task, stats, posts } = payload;
   const { writers, crews } = extractTopEntities(posts || [], 3);
-  const entitiesList = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
+  
+  const intro = generateTaskIntroduction({
+    seedNode: task.seed_node,
+    muid: task.MUID,
+    miningDepth: task.mining_depth,
+    miningType: task.mining_type,
+    postCount: stats?.posts,
+    hashtagCount: stats?.hashtags,
+    userCount: stats?.users,
+    writers,
+    crews,
+  });
 
-  const pageTitle = `${task.seed_node} (${task.MUID}) — Freight Graffiti Mining Task Data`;
-  const pageDescription = `Instagram data mining network analysis for seed node ${task.seed_node} (MUID: ${task.MUID}). Dataset contains ${stats.posts} posts. Top detected graffiti entities: ${entitiesList || 'None'}.`;
+  const pageTitle = intro.pageTitle;
+  const pageDescription = intro.metaDescription;
   const canonicalUrl = `${SITE_URL}/tasks/${task.MUID}`;
 
   return {
@@ -41,6 +53,7 @@ export async function generateMetadata({
     description: pageDescription,
     keywords: [
       task.seed_node,
+      intro.categoryLabel,
       'Freight Train Graffiti',
       'Data Mining Task',
       'Instagram Network Graph',
@@ -91,6 +104,18 @@ export default async function TaskDetailPage({
   const { task, stats, hashtags, posts } = payload;
 
   const { writers, crews } = extractTopEntities(posts, 5);
+  const intro = generateTaskIntroduction({
+    seedNode: task.seed_node,
+    muid: task.MUID,
+    miningDepth: task.mining_depth,
+    miningType: task.mining_type,
+    postCount: stats?.posts,
+    hashtagCount: stats?.hashtags,
+    userCount: stats?.users,
+    writers,
+    crews,
+  });
+
   const entitiesData = [
     ...writers.map(w => ({
       '@type': 'Person',
@@ -107,12 +132,10 @@ export default async function TaskDetailPage({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
-    name: `Freight Graffiti Network: ${task.seed_node}`,
-    description: `Instagram data mining dataset focusing on the freight train graffiti community related to ${task.seed_node}.`,
+    name: `Freight Graffiti Network: ${task.seed_node} (${task.MUID})`,
+    description: intro.jsonLdDescription,
     about: entitiesData
   };
-
-  const entitiesListStr = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
 
   return (
     <main>
@@ -140,16 +163,38 @@ export default async function TaskDetailPage({
           </div>
         </div>
 
-        {entitiesListStr && (
-          <article className="mb-4 bg-white p-3 rounded shadow-sm border border-info">
-            <h5 className="text-info fw-bold mb-2">🤖 Semantic AI Context</h5>
-            <p className="mb-0 text-muted">
-              This dataset represents a freight graffiti network analysis centered around the seed node <strong>{task.seed_node}</strong>. 
-              Utilizing Natural Language Processing, our algorithms have identified highly recurrent graffiti entities in this sub-network, 
-              including <strong>{entitiesListStr}</strong>. This graph discards irrelevant polysemic noise to focus strictly on North American railroad graffiti communalities.
-            </p>
-          </article>
-        )}
+        {/* Rich Editorial & Semantic AI Introduction Card */}
+        <article className="mb-4 bg-white p-4 rounded-3 shadow-sm border border-primary border-opacity-25">
+          <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+            <span className="badge bg-primary text-uppercase px-3 py-2">
+              {intro.categoryLabel}
+            </span>
+            <span className="text-muted small font-monospace">
+              MUID: {task.MUID}
+            </span>
+          </div>
+          <h2 className="h4 fw-bold text-dark mb-3">
+            Editorial Analysis & Semantic Context
+          </h2>
+          <p className="lead fs-6 text-secondary mb-0" style={{ lineHeight: '1.7' }}>
+            {intro.editorialParagraph}
+          </p>
+          {intro.entitiesSummary && (
+            <div className="mt-3 pt-3 border-top d-flex align-items-center gap-2 flex-wrap">
+              <span className="small fw-bold text-dark">🏷️ Key Detected Entities:</span>
+              {writers.slice(0, 5).map(w => (
+                <span key={w.term} className="badge bg-light text-dark border">
+                  ✍️ {w.term} <small className="text-muted">({w.count})</small>
+                </span>
+              ))}
+              {crews.slice(0, 5).map(c => (
+                <span key={c.term} className="badge bg-light text-primary border border-primary">
+                  👥 {c.term} <small className="text-muted">({c.count})</small>
+                </span>
+              ))}
+            </div>
+          )}
+        </article>
 
         {/* Server-Rendered Metrics Cards */}
         <div className="row mb-4 text-center">

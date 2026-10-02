@@ -5,6 +5,7 @@ import { Navigation } from '@/components/Navigation';
 import { getTaskDetailServerPayload, getStaticTasks } from '@/lib/db';
 import { AIGraphPageClient } from '@/components/AIGraphPageClient';
 import { extractTopEntities } from '@/lib/nlp-parser';
+import { generateTaskIntroduction } from '@/lib/task-introductions';
 
 export async function generateStaticParams() {
   const tasks = getStaticTasks();
@@ -29,10 +30,21 @@ export async function generateMetadata({
 
   const { task, stats, posts } = payload;
   const { writers, crews } = extractTopEntities(posts || [], 3);
-  const entitiesList = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
+  
+  const intro = generateTaskIntroduction({
+    seedNode: task.seed_node,
+    muid: task.MUID,
+    miningDepth: task.mining_depth,
+    miningType: task.mining_type,
+    postCount: stats?.posts,
+    hashtagCount: stats?.hashtags,
+    userCount: stats?.users,
+    writers,
+    crews,
+  });
 
-  const pageTitle = `AI Network Graph Analysis: ${task.seed_node} (${task.MUID})`;
-  const pageDescription = `Interactive multimodal AI network graph analysis for seed node ${task.seed_node}. Top detected graffiti entities: ${entitiesList || 'None'}. Dataset contains ${stats.posts} posts.`;
+  const pageTitle = `AI Network Graph Analysis: ${task.seed_node} (${task.MUID}) | Freight Graffiti`;
+  const pageDescription = `Interactive multimodal AI network graph analysis for seed node ${task.seed_node}. ${intro.metaDescription}`;
   const canonicalUrl = `${SITE_URL}/graph/${task.MUID}`;
 
   return {
@@ -40,6 +52,7 @@ export async function generateMetadata({
     description: pageDescription,
     keywords: [
       task.seed_node,
+      intro.categoryLabel,
       'AI Network Graph',
       'Graphology Visualization',
       'Freight Train Graffiti',
@@ -90,6 +103,18 @@ export default async function AIGraphPage({
   const { task, stats, posts } = payload;
 
   const { writers, crews } = extractTopEntities(posts, 5);
+  const intro = generateTaskIntroduction({
+    seedNode: task.seed_node,
+    muid: task.MUID,
+    miningDepth: task.mining_depth,
+    miningType: task.mining_type,
+    postCount: stats?.posts,
+    hashtagCount: stats?.hashtags,
+    userCount: stats?.users,
+    writers,
+    crews,
+  });
+
   const entitiesData = [
     ...writers.map(w => ({
       '@type': 'Person',
@@ -106,12 +131,10 @@ export default async function AIGraphPage({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
-    name: `Freight Graffiti Network: ${task.seed_node}`,
-    description: `Interactive visual network graph for ${task.seed_node}.`,
+    name: `Semantic Network Graph: ${task.seed_node} (${task.MUID})`,
+    description: intro.jsonLdDescription,
     about: entitiesData
   };
-
-  const entitiesListStr = [...writers.map(w => w.term), ...crews.map(c => c.term)].join(', ');
 
   return (
     <main>
@@ -141,16 +164,38 @@ export default async function AIGraphPage({
           </div>
         </div>
 
-        {entitiesListStr && (
-          <article className="mb-4 bg-white p-3 rounded shadow-sm border border-info">
-            <h5 className="text-info fw-bold mb-2">🤖 Semantic AI Context</h5>
-            <p className="mb-0 text-muted">
-              This interactive graph represents a semantic network analysis of freight train graffiti centered around the seed node <strong>{task.seed_node}</strong>. 
-              Our NER (Named Entity Recognition) pipeline has detected the following primary entities forming this sub-network cluster: <strong>{entitiesListStr}</strong>. 
-              This structured data disambiguates polysemic elements (e.g. Kosmetics) from actual graffiti writers and crews in North America.
-            </p>
-          </article>
-        )}
+        {/* Editorial Context & Semantic Disambiguation Card */}
+        <article className="mb-4 bg-white p-4 rounded-3 shadow-sm border border-info border-opacity-25">
+          <div className="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+            <span className="badge bg-info text-dark text-uppercase px-3 py-2 fw-bold">
+              {intro.categoryLabel}
+            </span>
+            <span className="text-muted small font-monospace">
+              MUID: {task.MUID}
+            </span>
+          </div>
+          <h2 className="h5 fw-bold text-dark mb-2">
+            Network Topology & Semantic Context
+          </h2>
+          <p className="text-muted mb-0" style={{ lineHeight: '1.6' }}>
+            {intro.editorialParagraph}
+          </p>
+          {intro.entitiesSummary && (
+            <div className="mt-3 pt-2 border-top d-flex align-items-center gap-2 flex-wrap">
+              <span className="small fw-bold text-dark">🎯 Cluster Entities:</span>
+              {writers.slice(0, 4).map(w => (
+                <span key={w.term} className="badge bg-light text-dark border">
+                  ✍️ {w.term}
+                </span>
+              ))}
+              {crews.slice(0, 4).map(c => (
+                <span key={c.term} className="badge bg-light text-primary border border-primary">
+                  👥 {c.term}
+                </span>
+              ))}
+            </div>
+          )}
+        </article>
 
         {/* Server HTML Summary Card */}
         <div className="card mb-4 shadow-sm border-0 bg-light">
