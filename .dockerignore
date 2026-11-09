@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env*
+*.log
+.DS_Store
+coverage
+*.sql
+*.gz
+*.zip
+*.pdf
+*.docx
